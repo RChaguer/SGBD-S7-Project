@@ -5,7 +5,7 @@
 delete from CLUB ;
 delete from CATEGORIE ;
 delete from EQUIPE ;
-delete from MATCH ;
+delete from RENCONTRE ;
 delete from SAISON ;
 delete from STADE ;
 delete from INDIVIDU ;
@@ -168,19 +168,19 @@ insert into STADE values (6 , 'MONTPELLIER STADE', 'MONTPELLIER');
 
 commit ;
 
---MATCH
+--RENCONTRE
 
-insert into MATCH values (1 , 1 , 2, 13, 27, '01-JAN-2020');
-insert into MATCH values (2 , 1 , 1, 41, 55, '01-JAN-2020');
-insert into MATCH values (3 , 1 , 5, 69, 83, '01-JAN-2020');
+insert into RENCONTRE values (1 , 1 , 2, 13, 27, '01-JAN-2020');
+insert into RENCONTRE values (2 , 1 , 1, 41, 55, '01-JAN-2020');
+insert into RENCONTRE values (3 , 1 , 5, 69, 83, '01-JAN-2020');
 
-insert into MATCH values (4 , 1 , 5 , 83, 13, '08-JAN-2020');
-insert into MATCH values (5 , 1 , 6, 27, 55, '08-JAN-2020');
-insert into MATCH values (6 , 1 , 4, 41, 69, '08-JAN-2020');
+insert into RENCONTRE values (4 , 1 , 5 , 83, 13, '08-JAN-2020');
+insert into RENCONTRE values (5 , 1 , 6, 27, 55, '08-JAN-2020');
+insert into RENCONTRE values (6 , 1 , 4, 41, 69, '08-JAN-2020');
 
-insert into MATCH values (7 , 1 , 2, 13, 69, '15-JAN-2020');
-insert into MATCH values (8 , 1 , 1, 27, 41, '15-JAN-2020');
-insert into MATCH values (9 , 1 , 3, 55, 83, '15-JAN-2020');
+insert into RENCONTRE values (7 , 1 , 2, 13, 69, '15-JAN-2020');
+insert into RENCONTRE values (8 , 1 , 1, 27, 41, '15-JAN-2020');
+insert into RENCONTRE values (9 , 1 , 3, 55, 83, '15-JAN-2020');
 
 commit ;
 
@@ -488,7 +488,7 @@ insert into PARTICIPATION values (30,38,4,5,null,null);
 
 insert into PARTICIPATION values (31,41,2,6,14,null);
 insert into PARTICIPATION values (32,42,1,6,7,null);
-insert into PARTICIPATION values (33,45,4,null,null);
+insert into PARTICIPATION values (33,45,4,6,null,null);
 
 insert into PARTICIPATION values (34,48,1,4,9,null);
 insert into PARTICIPATION values (35,49,3,4,15,null);
@@ -498,7 +498,7 @@ insert into PARTICIPATION values (37,8,2,7,9,2);
 insert into PARTICIPATION values (38,11,3,7,12,null);
 insert into PARTICIPATION values (39,12,4,7,null,null);
 
-insert into PARTICIPATION values (40,21,1,15,null);
+insert into PARTICIPATION values (40,21,1,8,15,null);
 insert into PARTICIPATION values (41,22,3,8,12,null);
 insert into PARTICIPATION values (42,25,4,8,null,null);
 

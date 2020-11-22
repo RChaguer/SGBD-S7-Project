@@ -10,7 +10,7 @@ drop table CATEGORIE cascade constraints;
 
 drop table EQUIPE cascade constraints;
 
-drop table MATCH cascade constraints;
+drop table RENCONTRE cascade constraints;
 
 drop table SAISON cascade constraints;
 
@@ -96,18 +96,18 @@ CREATE TABLE STADE
     constraint pk_stade primary key (ID_STADE)
 );
 -- ============================================================
---   Table : MATCH                                         
+--   Table : RENCONTRE                                         
 -- ============================================================
 
-CREATE TABLE MATCH
+CREATE TABLE RENCONTRE
 (
-    ID_MATCH              NUMBER(3)           not null,
+    ID_RENCONTRE              NUMBER(3)           not null,
     ID_SAISON             NUMBER(3)           not null,
     ID_STADE              NUMBER(3)           not null,
     ID_EQUIPE_R           NUMBER(3)           not null,
     ID_EQUIPE_V           NUMBER(3)           not null,
-    DATE_MATCH            DATE                        ,
-    constraint pk_match primary key (ID_MATCH)
+    DATE_RENCONTRE            DATE                        ,
+    constraint pk_RENCONTRE primary key (ID_RENCONTRE)
 );
 
 
@@ -189,7 +189,7 @@ CREATE TABLE PARTICIPATION
     ID_PARTICIPATION         NUMBER(3)           not null,
     ID_JOUEUR                NUMBER(3)           not null,
     ID_POSTE                 NUMBER(3)           not null,
-    ID_MATCH                 NUMBER(3)           not null,
+    ID_RENCONTRE                 NUMBER(3)           not null,
     NOMBRE_BUT               NUMBER(3)                   ,
     NOMBRE_FAUTE             NUMBER(3)                   ,
     constraint pk_participation primary key (ID_PARTICIPATION)
@@ -230,19 +230,19 @@ alter table EQUIPE
     add constraint fk2_equipe foreign key (ID_CLUB)
         references  CLUB (ID_CLUB);
 
-alter table MATCH
+alter table RENCONTRE
     add constraint fk1_saison foreign key (ID_SAISON)
         references  SAISON (ID_SAISON);
 
-alter table MATCH
+alter table RENCONTRE
     add constraint fk2_stade foreign key (ID_STADE)
         references  STADE (ID_STADE);
 
-alter table MATCH
+alter table RENCONTRE
     add constraint fk3_equipe foreign key (ID_EQUIPE_R)
         references  EQUIPE (ID_EQUIPE);
 
-alter table MATCH
+alter table RENCONTRE
     add constraint fk4_equipe foreign key (ID_EQUIPE_V)
         references  EQUIPE (ID_EQUIPE);
 
@@ -281,8 +281,8 @@ alter table PARTICIPATION
         references POSTE  (ID_POSTE);
 
 alter table PARTICIPATION
-    add constraint fk3_participation foreign key (ID_MATCH)
-        references MATCH  (ID_MATCH);
+    add constraint fk3_participation foreign key (ID_RENCONTRE)
+        references RENCONTRE  (ID_RENCONTRE);
 
 
 alter table HISTORIQUE
