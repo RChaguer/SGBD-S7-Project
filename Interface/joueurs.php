@@ -51,23 +51,12 @@ function showAllJoueurs($connection) {
 ?>
 
 <div class="container py-5">
-  <div class="row py-5">
-    <div class="col-lg-10 mx-auto">
-      <div class="card rounded shadow border-0">
-        <div class="card-body p-5 bg-white rounded">
-          <div class="table-responsive">
-            <table id="club_list" style="width:100%" class="table table-striped table-bordered">
-                <?php
-                showAllJoueurs($connection);
-                ?>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+    <table id="default_table" style="width:100%" class="table table-striped table-bordered">
+        <?php
+        showAllJoueurs($connection);
+        ?>
+    </table>
 </div>
-</div></div>
 <?php
 include "footer.php";
 ?>
