@@ -235,3 +235,12 @@ select CLUB.*,
 from TABLE_S inner join CLUB on TABLE_S.ID_CLUB = CLUB.ID_CLUB
 group by ID_CLUB
 order by SCORE desc, WINS desc, DRAWS desc, LOSSES;
+
+-- requete l'equipe actuelle des joueurs
+create view PLAYER_ACTUAL_TEAM as
+select J.ID_JOUEUR ID_JOUEUR,  E.ID_EQUIPE ID_EQUIPE, E.NOM_EQUIPE NOM_EQUIPE, H.DATE_DEBUT DATE_DEBUT
+                from (JOUEUR J  
+                left outer join (select H.*
+                                 from HISTORIQUE H
+                                 where H.DATE_DEBUT <= CURDATE() and H.DATE_FIN is null) H on J.ID_JOUEUR = H.ID_SPORTIF) 
+                left outer joiN EQUIPE E on E.ID_EQUIPE=H.ID_EQUIPE;
