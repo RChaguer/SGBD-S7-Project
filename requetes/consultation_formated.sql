@@ -259,8 +259,6 @@ from EQUIPE,SAISON;
 
 
 
-
-
 -- vue pour classement general dans tous les saisons
 drop view if exists TABLE_S;
 create view TABLE_S as
@@ -317,7 +315,12 @@ select E.NOM_EQUIPE as 'NOM EQUIPE', C.NOM_CLUB as CLUB, G.NOM_CATEGORIE as CAT
             from (EQUIPE E inner join CLUB C on E.ID_CLUB = C.ID_CLUB)
             inner join CATEGORIE G on G.ID_CATEGORIE = E.ID_CATEGORIE
             where C.ID_CLUB=1;
-
+                                  
+-- requete affichage du calendrier des matchs joués en mois de Janvier --
+select ID_RENCONTRE, ID_EQUIPE_R, ID_EQUIPE_V, STADE.NOM_STADE, DATE_RENCONTRE
+from RENCONTRE inner join STADE on STADE.ID_STADE = RENCONTRE.ID_STADE 
+where month(DATE_RENCONTRE) = 1;
+                                  
 -- modifier un individu --
 update INDIVIDU
 set NOM_INDIVIDU = 'ANTOINE'
