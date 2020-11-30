@@ -29,7 +29,7 @@ drop view if exists RANK_CLUB;
 create view JOUEUR_EQUIPE_V_RENCONTRE as
 select distinct HISTORIQUE.ID_SPORTIF,
                 HISTORIQUE.ID_EQUIPE,
-                EQUIPE.NOM_EQUIPE, 
+                EQUIPE.NOM_EQUIPE,
                 RENCONTRE.ID_RENCONTRE
 from HISTORIQUE
 inner join RENCONTRE on HISTORIQUE.ID_EQUIPE = RENCONTRE.ID_EQUIPE_V
@@ -65,11 +65,12 @@ select JOUEUR_EQUIPE_V_RENCONTRE.ID_RENCONTRE as M,
 from JOUEUR_EQUIPE_V_RENCONTRE
 inner join PARTICIPATION on (PARTICIPATION.ID_RENCONTRE=JOUEUR_EQUIPE_V_RENCONTRE.ID_RENCONTRE
                              and JOUEUR_EQUIPE_V_RENCONTRE.ID_SPORTIF = PARTICIPATION.ID_JOUEUR)
-inner join RENCONTRE on RENCONTRE.ID_RENCONTRE= JOUEUR_EQUIPE_V_RENCONTRE.ID_RENCONTRE                      
+inner join RENCONTRE on RENCONTRE.ID_RENCONTRE= JOUEUR_EQUIPE_V_RENCONTRE.ID_RENCONTRE
 group by JOUEUR_EQUIPE_V_RENCONTRE.ID_RENCONTRE,
          JOUEUR_EQUIPE_V_RENCONTRE.ID_EQUIPE,
          JOUEUR_EQUIPE_V_RENCONTRE.NOM_EQUIPE
 order by M;
+
 
 drop view NB_BUT_RENCONTRE_R;
 create view NB_BUT_RENCONTRE_R as
@@ -81,13 +82,14 @@ select JOUEUR_EQUIPE_R_RENCONTRE.ID_RENCONTRE as M,
 from JOUEUR_EQUIPE_R_RENCONTRE
 inner join PARTICIPATION on (PARTICIPATION.ID_RENCONTRE=JOUEUR_EQUIPE_R_RENCONTRE.ID_RENCONTRE
                              and JOUEUR_EQUIPE_R_RENCONTRE.ID_SPORTIF = PARTICIPATION.ID_JOUEUR)
-inner join RENCONTRE on RENCONTRE.ID_RENCONTRE= JOUEUR_EQUIPE_R_RENCONTRE.ID_RENCONTRE                      
+inner join RENCONTRE on RENCONTRE.ID_RENCONTRE = JOUEUR_EQUIPE_R_RENCONTRE.ID_RENCONTRE
 group by JOUEUR_EQUIPE_R_RENCONTRE.ID_RENCONTRE,
          JOUEUR_EQUIPE_R_RENCONTRE.ID_EQUIPE,
          JOUEUR_EQUIPE_R_RENCONTRE.NOM_EQUIPE
 order by M;
 
--- vue pour tt les scores 
+
+-- vue pour tt les scores
 create view SCORE as
 select NB_BUT_RENCONTRE_R.R as R,
        NB_BUT_RENCONTRE_R.NOMEQUIPE as HOME,
@@ -108,6 +110,20 @@ where SAISON=1;
 select score.* from score
 inner join RENCONTRE on score.RENCONTRE=ID_RENCONTRE
 where RENCONTRE.DATE_RENCONTRE = 'date';
+
+-- requete pour classer les meilleur joueurs pour une journée et pour une catégorie --
+select JOUEUR_EQUIPE_V_RENCONTRE.ID_SPORTIF as ID,
+       IFNULL(SUM(PARTICIPATION.NOMBRE_BUT), 0) as NB,
+from JOUEUR_EQUIPE_V_RENCONTRE
+inner join PARTICIPATION on (PARTICIPATION.ID_RENCONTRE=JOUEUR_EQUIPE_V_RENCONTRE.ID_RENCONTRE
+                             and JOUEUR_EQUIPE_V_RENCONTRE.ID_SPORTIF = PARTICIPATION.ID_JOUEUR)
+inner join RENCONTRE on RENCONTRE.ID_RENCONTRE= JOUEUR_EQUIPE_V_RENCONTRE.ID_RENCONTRE
+inner join JOUEUR_EQUIPE_R_RENCONTRE on JOUEUR_EQUIPE_R_RENCONTRE.ID_SPORTIF = JOUEUR_EQUIPE_V_RENCONTRE.ID_SPORTIF
+inner join EQUIPE on EQUIPE.ID_EQUIPE = JOUEUR_EQUIPE_V_RENCONTRE.ID_EQUIPE
+where EQUIPE.ID_CATEGORIE = 2 and  RENCONTRE.DATE_RENCONTRE = '2020-01-15'
+group by ID;
+order by NB DESC;
+
 
 create view WIN_R as
 select SAISON,
@@ -221,7 +237,7 @@ create view trash3 as
 select DRAWS.ID_EQUIPE, DRAWS.SAISON from DRAWS
  union
 select WINS.ID_EQUIPE, WINS.SAISON from WINS
- union 
+ union
 select LOSS.ID_EQUIPE, LOSS.SAISON from LOSS ;
 
 drop view if exists trash4;
@@ -247,11 +263,11 @@ select  RANK() OVER(
        IFNULL(LOSSES, 0) as LOSSES,
        (3*IFNULL(WINS, 0) + IFNULL(DRAWS, 0)) as SCORE,
        trash4.ID_SAISON
-          
-from trash4 
+
+from trash4
 left outer join WINS on WINS.ID_EQUIPE = trash4.ID_EQUIPE and wins.SAISON = trash4.ID_SAISON
 left outer join DRAWS on DRAWS.ID_EQUIPE = trash4.ID_EQUIPE and draws.SAISON = trash4.ID_SAISON
-left outer join LOSS on LOSS.ID_EQUIPE = trash4.ID_EQUIPE and loss.SAISON = trash4.ID_SAISON  
+left outer join LOSS on LOSS.ID_EQUIPE = trash4.ID_EQUIPE and loss.SAISON = trash4.ID_SAISON
 
 
 -- requete classement des equipes pour une categ donnée et une saison donnée
@@ -264,7 +280,7 @@ where ID_CATEGORIE=5 and ID_SAISON=2;
 
 -- requete rank equipes par club
 create view RANK_CLUB as
-select CLUB.*, 
+select CLUB.*,
        SUM(TABLE_S.WINS) as WINS,
        SUM(TABLE_S.DRAWS) as DRAWS,
        SUM(TABLE_S.LOSSES) as LOSSES,
@@ -274,9 +290,9 @@ group by ID_CLUB
 order by SCORE desc, WINS desc, DRAWS desc, LOSSES;
 
 -- requete des clubs classés par leurs résultats
-create view CLUBS as 
+create view CLUBS as
 select ROW_NUMBER() OVER(
-     order by SCORE desc ) RANG , 
+     order by SCORE desc ) RANG ,
           RANK_CLUB.NOM_CLUB,
           RANK_CLUB.WINS,
           RANK_CLUB.DRAWS,
@@ -290,23 +306,39 @@ select E.NOM_EQUIPE as 'NOM EQUIPE', C.NOM_CLUB as CLUB, G.NOM_CATEGORIE as CAT
             inner join CATEGORIE G on G.ID_CATEGORIE = E.ID_CATEGORIE
             where C.ID_CLUB=1;
 
--- suppression club
-delete from CLUB
-where ID_CLUB = 7;
+-- modifier un individu --
+update INDIVIDU
+set NOM_INDIVIDU = 'ANTOINE'
+where ID_INDIVIDU = 2;
+
+-- Ajouter un individu --
+insert into INDIVIDU (ID_INDIVIDU, NOM_INDIVIDU, ADRESSE) values (55,'MARADONA','DIEGO','5 Avenue Pablo BUENOS AIRES');
+
+-- suppression individu --
+delete from INDIVIDU
+where ID_INDIVIDU = 7;
+
+-- ajouter un club --
+insert into CLUB (ID_CLUB, NOM_CLUB, DATE_CREATION) values ( 7  , 'Reims HANDBALL'   , 1942 );
 
 -- modifier un club
 update CLUB
 set DATE_CREATION = 'xxxxx', NOM_CLUB = 'xxxxx'
 where ID_CLUB = 1;
 
--- suppression joueur
-delete from JOUEUR
-where ID_JOUEUR = 7;
+-- suppression club
+delete from CLUB
+where ID_CLUB = 7;
 
+-- ajouter une rencontre --
+insert into RENCONTRE (ID_RENCONTRE, ID_SAISON, ID_STADE, ID_EQUIPE_R, ID_EQUIPE_V, DATE_RENCONTRE) values (10 , 1 , 3, 41, 83, '18-JAN-2020');
 
--- suppression EQUIPE
-delete from EQUIPE
-where ID_EQUIPE = 7;
+-- modifier une rencontre --
+update RENCONTRE set RENCONTRE.ID_SAISON = 1 where RENCONTRE.ID_RENCONTRE = 3;
+
+-- supression rencontre --
+delete from RENCONTRE
+where ID_RENCONTRE = 4;
 
 
 -- requete pour affichier la liste des joueur a la date actuelle
@@ -316,7 +348,7 @@ select JOUEUR.NUMERO_LICENCE as 'Numéro licence',
        INDIVIDU.ADRESSE as 'Adresse',
        JOUEUR.DATE_NAISSANCE as 'Date de naissance',
        HISTORIQUE.DATE_DEBUT as 'Date début contrat',
-       HISTORIQUE.DATE_FIN as 'Date fin contrat' 
+       HISTORIQUE.DATE_FIN as 'Date fin contrat'
 from JOUEUR inner join INDIVIDU on JOUEUR.ID_JOUEUR = INDIVIDU.ID_INDIVIDU
 inner join SPORTIF on INDIVIDU.ID_INDIVIDU=SPORTIF.ID_SPORTIF
 inner join HISTORIQUE on SPORTIF.ID_SPORTIF=HISTORIQUE.ID_SPORTIF
@@ -331,7 +363,7 @@ select JOUEUR.NUMERO_LICENCE as 'Numéro licence',
        INDIVIDU.ADRESSE as 'Adresse',
        JOUEUR.DATE_NAISSANCE as 'Date de naissance',
        HISTORIQUE.DATE_DEBUT as 'Date début contrat',
-       HISTORIQUE.DATE_FIN as 'Date fin contrat' 
+       HISTORIQUE.DATE_FIN as 'Date fin contrat'
 from JOUEUR inner join INDIVIDU on JOUEUR.ID_JOUEUR = INDIVIDU.ID_INDIVIDU
 inner join SPORTIF on INDIVIDU.ID_INDIVIDU=SPORTIF.ID_SPORTIF
 inner join HISTORIQUE on SPORTIF.ID_SPORTIF=HISTORIQUE.ID_SPORTIF
@@ -351,7 +383,7 @@ drop view if exists trash2;
 create view trash2 as
  select RENCONTRE,R,HOME, sum(SCOREAWAY) as NB,SAISON
  from SCORE
- group by R 
+ group by R
  union
  select RENCONTRE, V,AWAY, sum(SCOREHOME), SAISON
  from SCORE
@@ -396,25 +428,25 @@ group by R,SAISON;
 
 
 
--- requete final pour rank/categ 
+-- requete final pour rank/categ
 select NOM_EQUIPE ,WINS,DRAWS,LOSSES,SCORE,ifnull(SOMME_POINTS_MARQUES,0) as "SOMME POINTS MARQUES" ,ifnull(neg,0) as"SOMME POINTS RECUS",ifnull(SOMME_POINTS_MARQUES+neg,0) as DIFFERENCE, ifnull(MOYENNE_POINTS_MARQUES,0) as "MOYENNE POINTS MARQUES"
- from TABLE_S left outer join avg_current  
+ from TABLE_S left outer join avg_current
  on ID_EQUIPE = V and TABLE_S.ID_SAISON=avg_current.SAISON
  left outer join neg_current on V=neg_current.R and TABLE_S.ID_SAISON=neg_current.SAISON
  where table_s.ID_SAISON=2, where teble_s.ID_CATEGORIE=7
  order by SCORE desc
 
 -- requete match joués par une équipe
- select M, NOMEQUIPE as "NOM EQUIPE", NB 
- from trash 
+ select M, NOMEQUIPE as "NOM EQUIPE", NB
+ from trash
  where ID_EQUIPE =1;
 
 
 -- requete l'equipe actuelle des joueurs
 create view PLAYER_ACTUAL_TEAM as
 select J.ID_JOUEUR ID_JOUEUR,  E.ID_EQUIPE ID_EQUIPE, E.NOM_EQUIPE NOM_EQUIPE, H.DATE_DEBUT DATE_DEBUT
-                from (JOUEUR J  
+                from (JOUEUR J
                 left outer join (select H.*
                                  from HISTORIQUE H
-                                 where H.DATE_DEBUT <= CURDATE() and H.DATE_FIN is null) H on J.ID_JOUEUR = H.ID_SPORTIF) 
+                                 where H.DATE_DEBUT <= CURDATE() and H.DATE_FIN is null) H on J.ID_JOUEUR = H.ID_SPORTIF)
                 left outer joiN EQUIPE E on E.ID_EQUIPE=H.ID_EQUIPE;
