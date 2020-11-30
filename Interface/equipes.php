@@ -79,7 +79,7 @@ function getUpdateForm($connection, $id) {
      if($res0 = $connection->query($requete0)) {
         $equipe = $res0->fetch_assoc();
     } else {
-        header("Location : equipes.php");
+        console_log("Erreur de mise à jour");
         exit();
     }
     echo "<div class=\"modal fade\" id=\"unique_modal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=`\"exampleModalCenterTitle\" aria-hidden=\"false\">";

@@ -74,7 +74,7 @@ function getUpdateForm($connection, $id) {
     echo "<div class=\"modal-dialog modal-dialog-centered\" role=\"document\">";
     echo "<div class=\"modal-content\">";
     echo "<div class=\"modal-header\">";
-    echo "<h4 class=\"modal-title\" id=\"modal_title\">Mise à jour de l'Equipe</h4>";
+    echo "<h4 class=\"modal-title\" id=\"modal_title\">Mise à jour du joueur</h4>";
     echo "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">";
     echo "<span aria-hidden=\"true\">&times;</span>";
     echo "</button>";
@@ -89,31 +89,31 @@ function getUpdateForm($connection, $id) {
         echo "<div class=\"form-group row\">
                 <label  class=\"col-auto col-form-label col-form-label-sm\">Nom</label>
                 <div class=\"col\">
-                <input class=\"form-control\" name='nom' value=".$joueur["NOM"].">";
+                <input class=\"form-control\" name='nom' value=\"".$joueur["NOM"]."\">";
         echo "</div>";
         echo "</div>";
         echo "<div class=\"form-group row\">
                 <label  class=\"col-auto col-form-label col-form-label-sm\">Prénom</label>
                 <div class=\"col\">
-                <input class=\"form-control\" name='prenom' value=".$joueur["PRENOM"].">";
+                <input class=\"form-control\" name='prenom' value=\"".$joueur["PRENOM"]."\">";
         echo "</div>";
         echo "</div>";
         echo "<div class=\"form-group row\">
                 <label  class=\"col-auto col-form-label col-form-label-sm\">Adresse</label>
                 <div class=\"col\">
-                <input class=\"form-control\" name='adresse' value=".$joueur["ADR"].">";
+                <input class=\"form-control\" name='adresse' value=\"".$joueur["ADR"]."\">";
         echo "</div>";
         echo "</div>";
         echo "<div class=\"form-group row\">
                 <label  class=\"col-auto col-form-label col-form-label-sm\">Numéro de License</label>
                 <div class=\"col\">
-                <input class=\"form-control\" name='num_lic' value=".$joueur["NUM_LIC"].">";
+                <input class=\"form-control\" name='num_lic' value=\"".$joueur["NUM_LIC"]."\">";
         echo "</div>";
         echo "</div>";
         echo "<div class=\"form-group row\">
                 <label  class=\"col-auto col-form-label col-form-label-sm\">Date de Naissance</label>           
                 <div class=\"col\">
-                <input class=\"form-control\" name='date' value=".$joueur["DATE"].">";
+                <input class=\"form-control\" name='date' value=\"".$joueur["DATE"]."\">";
         echo "</div>";
         echo "</div>";
     }
@@ -272,9 +272,7 @@ function showAllJoueurs($connection) {
         deleteOneJoueur($connection, $id_joueur);
     } else if (isset($_GET["edit"])) {
         getUpdateForm($connection, $id_joueur);
-    } else {
-        showOneJoueur($connection, $id_joueur);
-    }
+    } 
     }
 ?>
 

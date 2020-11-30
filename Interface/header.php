@@ -41,11 +41,32 @@
                 <ul class="nav navbar-nav">
                     <li class="nav-item"><a class="nav-link" href="clubs.php" style="color: rgb(255,255,255);font-family: Alata, sans-serif;">Clubs</a></li>
                     <li class="nav-item"><a class="nav-link" href="equipes.php" style="color: rgb(255,255,255);font-family: Alata, sans-serif;">Equipes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="joueurs.php" style="color: rgb(255,255,255);font-family: Alata, sans-serif;">Joueurs</a></li>
+                    <li class="nav-item dropdown">
+                        <a data-toggle="dropdown" aria-expanded="false" class="dropdown-toggle nav-link" href="#" style="color: rgb(255,255,255);font-family: Alata, sans-serif;">Effectif Sportif</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="joueurs.php" style="color: rgb(69,69,69);font-family: Alata, sans-serif;">Joueurs</a>
+                            <a class="dropdown-item" href="entraineurs.php" style="color: rgb(69,69,69);font-family: Alata, sans-serif;">Entraineurs</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a data-toggle="dropdown" aria-expanded="false" class="dropdown-toggle nav-link" href="#" style="color: rgb(255,255,255);font-family: Alata, sans-serif;">Effectif Administratif</a>
+                        <div class="dropdown-menu">
+                            <a  class="dropdown-item" href="personnels.php" style="color: rgb(69,69,69);font-family: Alata, sans-serif;">Personnels</a>
+                            <a  class="dropdown-item" href="roles.php" style="color: rgb(69,69,69);font-family: Alata, sans-serif;">Roles</a>
+                            <a  class="dropdown-item" href="gestiondesroles.php" style="color: rgb(69,69,69);font-family: Alata, sans-serif;">Gestion des Roles</a>
+                        </div>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="matchs.php" style="color: rgb(255,255,255);font-family: Alata, sans-serif;">Matchs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="transferts.php" style="color: rgb(255,255,255);font-family: Alata, sans-serif;">Transferts</a></li>
+                    <li class="nav-item dropdown">
+                    <a data-toggle="dropdown" aria-expanded="false" class="dropdown-toggle nav-link" href="#" style="color: rgb(255,255,255);font-family: Alata, sans-serif;">Classement</a>
+                        <div class="dropdown-menu">
+                            <a  class="dropdown-item" href="classementClub.php" style="color: rgb(69,69,69);font-family: Alata, sans-serif;">Clubs</a>
+                            <a  class="dropdown-item" href="classementEquipe.php" style="color: rgb(69,69,69);font-family: Alata, sans-serif;">Equipes</a>
+                            <a  class="dropdown-item" href="classementJoueur.php" style="color: rgb(69,69,69);font-family: Alata, sans-serif;">Joueurs</a>
+                        </div>
+                    </li>
                 </ul>
-                <form class="form-inline mr-auto" target="_self">
-                    <div class="form-group"><label for="search-field"></label></div>
-                </form><a class="btn btn-light action-button" role="button" href="#" style="background: rgba(220,220,220,0.31);">Se Connecter</a></div>
         </div>
     </nav>
     <div></div>
@@ -58,5 +79,5 @@ function console_log( $data ){
   echo '</script>';
 }
 ?>
-    
+      
 </html>

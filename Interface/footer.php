@@ -8,14 +8,17 @@
                             <li><a href="index.php">Accueil<br></a></li>
                             <li><a href="clubs.php">Clubs</a></li>
                             <li><a href="equipes.php">Equipes</a></li>
-                            <li><a href="joueurs.php">Joueurs</a></li>
+                            <li><a href="matchs.php">Matchs</a></li>
+                            <li><a href="transferts.php">Transferts</a></li>
                         </ul>
                     </div>
                     <div class="col-sm-6 col-md-3 item" style="height: 139px;">
-                        <h3>À propos<br></h3>
+                        <h3>Classement<br></h3>
                         <ul>
                             <li></li>
-                            <li><a href="#">Equipe de développement&nbsp;</a></li>
+                            <li><a href="classementClub.php">Club&nbsp;</a></li>
+                            <li><a href="classementEquipe.php">Equipe&nbsp;</a></li>
+                            <li><a href="classementJoueur.php">Joueur&nbsp;</a></li>
                             <li></li>
                         </ul>
                     </div>

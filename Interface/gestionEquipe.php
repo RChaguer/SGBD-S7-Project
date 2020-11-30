@@ -1,4 +1,5 @@
 <?php
+ob_start();
 include "connect.php";
 include "header.php";
 
@@ -17,6 +18,7 @@ foreach($required as $field) {
 if ($error) {
   console_log("All fields are required.");
   header("Location: equipes.php");
+  ob_enf_flush();
   exit();
 }
 
@@ -48,5 +50,6 @@ if (isset($_GET['id_equipe'])) {
 }
 $connection->close();
 header("Location: equipes.php");
+ob_enf_flush();
 exit();
 ?>

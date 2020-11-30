@@ -1,4 +1,5 @@
 <?php
+ob_start();
 include "connect.php";
 include "header.php";
 
@@ -17,6 +18,7 @@ foreach($required as $field) {
 if ($error) {
   console_log("All fields are required.");
   header("Location: clubs.php");
+  ob_enf_flush();
   exit();
 }
 
@@ -37,7 +39,7 @@ if (isset($_GET['id_club'])) {
     }
 } else if (isset($_GET['new'])) {
     $requete = "insert into CLUB (NOM_CLUB, DATE_CREATION)
-                values ('".$nom."', ".$date.");";
+                values ('".$nom."', '".$date."');";
 
     if($res = $connection->prepare($requete)) {
         $res->execute();
@@ -47,6 +49,7 @@ if (isset($_GET['id_club'])) {
 }
 $connection->close();
 header("Location: clubs.php");
+ob_enf_flush();
 exit();
 
 ?>
