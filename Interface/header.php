@@ -57,7 +57,7 @@
                         </div>
                     </li>
                     <li class="nav-item"><a class="nav-link" href="matchs.php" style="color: rgb(255,255,255);font-family: Alata, sans-serif;">Matchs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="transferts.php" style="color: rgb(255,255,255);font-family: Alata, sans-serif;">Transferts</a></li>
+                    <li class="nav-item"><a class="nav-link" href="historique.php" style="color: rgb(255,255,255);font-family: Alata, sans-serif;">Historique</a></li>
                     <li class="nav-item dropdown">
                     <a data-toggle="dropdown" aria-expanded="false" class="dropdown-toggle nav-link" href="#" style="color: rgb(255,255,255);font-family: Alata, sans-serif;">Classement</a>
                         <div class="dropdown-menu">
@@ -68,8 +68,8 @@
                     </li>
                 </ul>
         </div>
+        </div>
     </nav>
-    <div></div>
 </body>
 
 <?php    

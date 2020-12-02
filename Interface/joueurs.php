@@ -8,67 +8,6 @@ include "connect.php";
 </div>
 
 <?php
-function showOneJoueur($connection, $id) {
-    $requete1="select E.NOM_EQUIPE NOM,  G.NOM_CATEGORIE CAT, C.NOM_CLUB CLUB
-                from EQUIPE E inner join CLUB C on E.ID_CLUB=C.ID_CLUB 
-                                inner join CATEGORIE G on G.ID_CATEGORIE=E.ID_CATEGORIE
-                where ID_EQUIPE=".$id.";";
-    $requete2="select I.ID_INDIVIDU ID, I.NOM_INDIVIDU NOM, I.PRENOM_INDIVIDU PRENOM, V.DATE_DEBUT DATE
-                from JOUEUR P inner join PLAYER_ACTUAL_TEAM V on P.ID_JOUEUR = V.ID_JOUEUR
-                                inner join INDIVIDU I on I.ID_INDIVIDU = P.ID_JOUEUR
-                where V.ID_EQUIPE=".$id.";";
-
-  /* execute la requete */
-    if($res1 = $connection->query($requete1)) {
-        $equipe = $res1->fetch_assoc();
-        echo "<div class=\"modal fade\" id=\"unique_modal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=`\"exampleModalCenterTitle\" aria-hidden=\"false\">";
-        echo "<div class=\"modal-dialog modal-dialog-centered\" role=\"document\">";
-        echo "<div class=\"modal-content\">";
-        echo "<div class=\"modal-header\">";
-        echo "<h4 class=\"modal-title\" id=\"modal_title\">Nom De l'Equipe : ".$equipe["NOM"]."</h4>";
-        echo "<button type=\"button\" class=\"clos///////////////////////////////////////////e\" data-dismiss=\"modal\" aria-label=\"Close\">";
-        echo "<span aria-hidden=\"true\">&times;</span>";
-        echo "</button>";
-        echo "</div>";
-        echo "<div class=\"modal-body\">";
-        if ($res2 = $connection->query($requete2)) {
-            echo "<h5 class=\"modal-title\" id=\"modal_title\"> Club : ".$equipe["CLUB"]."</h5>";
-            echo "<h5 class=\"modal-title\" id=\"modal_title\"> Catégorie : ".$equipe["CAT"]."</h5>";
-            echo "<h5 class=\"modal-title\" id=\"modal_title\"> Les Joueurs de l'équipe :</h5>";
-            echo "<table id=\"joueur_table\" class=\"table\" >";
-            echo "<thead>";
-            echo "<tr>";
-            echo "<th> Nom et Prénom </th>";
-            echo "<th> Date Début Contrat</th>";
-            echo "</tr>";
-            echo "</thead>";
-            echo "<tbody>";
-            while ($joueur = $res2->fetch_assoc()) {
-                echo "<tr>";
-                echo "<td> <a href=\"joueurs.php?id_joueur=".$joueur["ID"]."\" > ".$joueur["NOM"]." ".$joueur["PRENOM"]." </a></td>";
-                echo "<td>".$joueur["DATE"]."</td>";
-                echo "</tr>";
-            }
-            echo "</table>";
-        }
-        echo "</div>";
-        echo "<div class=\"modal-footer\">";
-        echo "<button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>";
-        echo "</div>";
-        echo "</div>";
-        echo "</div>";
-        echo "</div>";
-        echo "<script>";
-        echo "$(document).ready(function() {";
-        echo "$('#unique_modal').modal('show');";
-        echo "});";
-        echo "</script>";
-
-  } else {
-        console_log("error");
-    }
-}
-
 function getUpdateForm($connection, $id) {
     echo "<div class=\"modal fade\" id=\"unique_modal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=`\"exampleModalCenterTitle\" aria-hidden=\"false\">";
     echo "<div class=\"modal-dialog modal-dialog-centered\" role=\"document\">";

@@ -9,7 +9,7 @@
                             <li><a href="clubs.php">Clubs</a></li>
                             <li><a href="equipes.php">Equipes</a></li>
                             <li><a href="matchs.php">Matchs</a></li>
-                            <li><a href="transferts.php">Transferts</a></li>
+                            <li><a href="historique.php">Historique</a></li>
                         </ul>
                     </div>
                     <div class="col-sm-6 col-md-3 item" style="height: 139px;">
