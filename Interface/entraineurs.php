@@ -136,7 +136,7 @@ function showAllEntraineurs($connection) {
 					<div class=\"col\">
 						<h2>Gestion des <b> Entraineurs</b></h2>
 					</div>
-					<div class=\"col-2 order-2\" style=\"width:50\">
+					<div class=\"col-3 order-2\" style=\"width:50\">
 						<a href=\"entraineurs.php?new=true\" class=\"btn btn-success\"><i class=\"material-icons\">&#xE147;</i> <span>Ajouter Entraineur</span></a>
 					</div>
 				</div>

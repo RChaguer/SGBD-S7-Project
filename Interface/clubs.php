@@ -118,7 +118,7 @@ function getUpdateForm($connection, $id) {
     echo "$('#unique_modal').modal('show');";
     echo "});";
     echo "</script>";
-}
+ }
 
 function getAddForm($connection) {
 
@@ -176,14 +176,8 @@ function deleteOneClub($connection, $id) {
 }
 
 function showAllClubs($connection) {
-    $requete="select ROW_NUMBER() OVER(
-            order by SCORE desc ) RANG ,
-                  CLUB.ID_CLUB ID,
-                  CLUB.NOM_CLUB NOM,
-                  IFNULL(RANK_CLUB.WINS, 0) WINS,
-                  IFNULL(RANK_CLUB.DRAWS, 0) DRAWS,
-                  IFNULL(RANK_CLUB.LOSSES, 0) LOSSES
-            from RANK_CLUB right outer join CLUB on RANK_CLUB.ID_CLUB = CLUB.ID_CLUB;";
+    $requete="select ID_CLUB as ID, NOM_CLUB as NOM, DATE_CREATION AS DATE
+            from CLUB;";
 
   /* execute la requete */
     if($res = $connection->query($requete)) {
@@ -202,11 +196,9 @@ function showAllClubs($connection) {
         echo "<table id=\"default_table\" style=\"width:100%\" class=\"table table-striped table-bordered\">";
         echo "<thead>";
         echo "<tr>";
-        echo "<th> Rang </th>";
+        echo "<th> </th>";
         echo "<th> Nom du Club </th>";
-        echo "<th> Matchs Gagnés </th>";
-        echo "<th> Matchs Nuls </th>";
-        echo "<th> Matchs Perdus </th>";
+        echo "<th> Date de Création </th>";
         echo "<th>  </th>";
         echo "</tr>";
         echo "</thead>";
@@ -214,11 +206,9 @@ function showAllClubs($connection) {
 
         while ($club = $res->fetch_assoc()) {
             echo "<tr>";
-            echo "<td>".$club["RANG"]."</td>";
+            echo "<td> </td>";
             echo "<td> <a href=\"clubs.php?id_club=".$club["ID"]."\" > ".$club["NOM"]." </a></td>";
-            echo "<td>".$club["WINS"]."</td>";
-            echo "<td>".$club["DRAWS"]."</td>";
-            echo "<td>".$club["LOSSES"]."</td>";
+            echo "<td>".$club["DATE"]."</td>";
             echo "<td>  <a href=\"clubs.php?id_club=".$club["ID"]."&amp;edit=true\"><i class=\"material-icons\">edit</i></a>
                         <a href=\"clubs.php?id_club=".$club["ID"]."&amp;delete=true\"><i class=\"material-icons\">delete</i></a></td>";
             echo "</tr>";

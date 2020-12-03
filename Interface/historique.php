@@ -199,7 +199,7 @@ function showAllHistorique($connection) {
 					<div class=\"col\">
 						<h2>Gestion de <b> l'Historique</b></h2>
 					</div>
-					<div class=\"col-2 order-2\" style=\"width:50\">
+					<div class=\"col-3 order-2\" style=\"width:50\">
 						<a href=\"historique.php?new=true\" class=\"btn btn-success\"><i class=\"material-icons\">&#xE147;</i> <span>Ajouter un Historique</span></a>
 					</div>
 				</div>

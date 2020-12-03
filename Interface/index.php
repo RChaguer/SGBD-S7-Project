@@ -3,7 +3,7 @@ include "header.php";
 include "connect.php";
 ?>
 
-<div class="highlight-phone" style="width: 1920;height: 559px;background: linear-gradient(rgba(10,70,131,0.46), white);margin: auto;padding-right: auto;">
+<div class="highlight-phone" style="width: 1920;height: 700px;background: linear-gradient(rgba(10,70,131,0.46), white);margin: auto;padding-right: auto;">
     <div class="container">
         <div class="row">
             <div class="col-md-8" style="width: 765px;border-right: 3px dotted rgb(133,146,159);max-width: 670px;">

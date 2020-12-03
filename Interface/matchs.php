@@ -16,6 +16,8 @@ function getAddForm($connection, $id_cat) {
                 where ID_CATEGORIE=".$id_cat.";";
     $requete2 = "SELECT ID_SAISON, LABEL
                 from SAISON;";
+    $requete3 = "SELECT ID_STADE, NOM_STADE, VILLE
+                from STADE;";
     
     echo "<div class=\"modal fade\" id=\"unique_modal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=`\"exampleModalCenterTitle\" aria-hidden=\"false\">";
     echo "<div class=\"modal-dialog modal-dialog-centered\" role=\"document\">";
@@ -45,8 +47,7 @@ function getAddForm($connection, $id_cat) {
             }
     } else {
                 
-        echo "<form method=\"post\" id=\"add\" action=\"gestionMatch.php\"></form>";
-        echo "<form method=\"get\" id=\"changeCat\" action=\"matchs.php?new=true\">";
+        echo "<form method=\"post\" id=\"add\" action=\"gestionMatch.php?new=true\">";
         echo "<div class=\"modal-body\">";
 
         if($res0 = $connection->query($requete0)) {
@@ -111,8 +112,19 @@ function getAddForm($connection, $id_cat) {
                     <input name='date' type=\"text\" class=\"form-control form-control-sm\">
                 </div>
             </div>";
-        
-        
+        if($res3 = $connection->query($requete3)) {
+            echo "<div class=\"form-group row\">
+                    <label  class=\"col-auto col-form-label col-form-label-sm\">Stade</label>
+                    <div class=\"col\">
+                    <input type=\"hidden\" name=\"new\" value=true/>
+                    <select class=\"form-control\" name='stade' id=\"stade_select\">";
+            while ($stade = $res3->fetch_assoc()) {
+                echo "<option value=".$stade["ID_STADE"].">".$stade["NOM_STADE"]." - ".$stade["VILLE"]."</option>";
+            }
+            echo   "</select>
+                    </div>
+                    </div>";
+            }        
     }
 
                 
@@ -120,9 +132,7 @@ function getAddForm($connection, $id_cat) {
     
     echo "<div class=\"modal-footer\">";
     echo "<button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>";
-    echo "<button type=\"submit\" form=\"add\" class=\"btn btn-primary\"";
-    if ($id_cat != 0) 
-        echo "onclick=\"document.getElementById(\"add\").submit()\"";
+    echo "<button type='submit' form=\"add\" class=\"btn btn-primary\"";
     echo ">Ajouter";
 
     echo "</div>";
@@ -137,41 +147,204 @@ function getAddForm($connection, $id_cat) {
     echo "</script>";
 }
 
+function getUpdateForm($connection, $id) {
+    $requete_lock = "SELECT ID_PARTICIPATION
+                    from PARTICIPATION
+                    where ID_RENCONTRE=".$id.";";
+    if($lock = $connection->query($requete_lock)) {
+        if (mysqli_num_rows($lock)==0)
+            $lock = false;
+        else 
+            $lock = true;
+    } else 
+        exit();
+    $requete_id = "SELECT E_R.ID_EQUIPE R, E_R.NOM_EQUIPE NOM_R, E_V.ID_EQUIPE V, E_V.NOM_EQUIPE NOM_V, R.ID_SAISON SAISON, S.LABEL LABEL, ST.ID_STADE STADE, ST.NOM_STADE NOM_STADE, ST.VILLE VILLE, R.DATE_RENCONTRE DATE
+                    from RENCONTRE R inner join EQUIPE E_R on R.ID_EQUIPE_R = E_R.ID_EQUIPE
+                    inner join EQUIPE E_V on R.ID_EQUIPE_V = E_V.ID_EQUIPE
+                    inner join SAISON S on R.ID_SAISON = S.ID_SAISON
+                    inner join STADE ST on R.ID_STADE = ST.ID_STADE
+                    where R.ID_RENCONTRE = ".$id."";
+    if ($match = $connection->query($requete_id))
+        $match = $match->fetch_assoc();
+    else 
+        exit();
+    
+    if (!$lock) {
+        $requete1 = "SELECT ID_EQUIPE, NOM_EQUIPE 
+                    from EQUIPE";
+        $requete2 = "SELECT ID_SAISON, LABEL
+                    from SAISON;";
+    }  
+    $requete3 = "SELECT ID_STADE, NOM_STADE, VILLE
+                from STADE;";
+
+    
+    echo "<div class=\"modal fade\" id=\"unique_modal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=`\"exampleModalCenterTitle\" aria-hidden=\"false\">";
+    echo "<div class=\"modal-dialog modal-dialog-centered\" role=\"document\">";
+    echo "<div class=\"modal-content\">";
+    echo "<div class=\"modal-header\">";
+    echo "<h4 class=\"modal-title\" id=\"modal_title\">Modifier un Match</h4>";
+    echo "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">";
+    echo "<span aria-hidden=\"true\">&times;</span>";
+    echo "</button>";
+    echo "</div>";
+                
+    echo "<form method=\"post\" id=\"add\" action=\"gestionMatch.php?update=true&amp;match=".$id."\">";
+    echo "<div class=\"modal-body\">";
+
+    echo "<div class=\"form-group row\">
+            <label  class=\"col-auto col-form-label col-form-label-sm\">Eq. à Domicile</label>
+            <div class=\"col\">
+            <input type=\"hidden\" name=\"new\" value=true/>
+            <select class=\"form-control\" name='id_home' id=\"equipe_select1\">";
+    if (!$lock) {
+        if($res1 = $connection->query($requete1)) {
+            while ($equipe = $res1->fetch_assoc()) {
+                if (intval($match["R"]) == intval($equipe["ID_EQUIPE"]))
+                    echo "<option selected='selected' value=".$equipe["ID_EQUIPE"].">".$equipe["NOM_EQUIPE"]."</option>";
+                else 
+                    echo "<option value=".$equipe["ID_EQUIPE"].">".$equipe["NOM_EQUIPE"]."</option>";
+            }
+        }
+    } else {
+        echo "<option value=".$match["R"].">".$match["NOM_R"]."</option>";
+    }
+    echo   "</select>
+            </div>
+            </div>";
+    
+    echo "<div class=\"form-group row\">
+            <label  class=\"col-auto col-form-label col-form-label-sm\">Eq. à Domicile</label>
+            <div class=\"col\">
+            <input type=\"hidden\" name=\"new\" value=true/>
+            <select class=\"form-control\" name='id_away' id=\"equipe_select2\">";
+    if (!$lock) {
+        if($res1 = $connection->query($requete1)) {
+            while ($equipe = $res1->fetch_assoc()) {
+                if (intval($match["V"]) == intval($equipe["ID_EQUIPE"]))
+                    echo "<option selected='selected' value=".$equipe["ID_EQUIPE"].">".$equipe["NOM_EQUIPE"]."</option>";
+                else 
+                    echo "<option value=".$equipe["ID_EQUIPE"].">".$equipe["NOM_EQUIPE"]."</option>";
+            }
+        }
+    } else {
+        echo "<option value=".$match["V"].">".$match["NOM_V"]."</option>";
+    }
+    echo  "</select>
+            </div>
+            </div>";
+        
+
+    echo "<div class=\"form-group row\">
+            <label  class=\"col-auto col-form-label col-form-label-sm\">Saison</label>
+            <div class=\"col\">
+            <input type=\"hidden\" name=\"new\" value=true/>
+            <select class=\"form-control\" name='saison' id=\"saison_select0\">";
+    if (!$lock) {
+        if($res2 = $connection->query($requete2)) {
+            while ($saison = $res2->fetch_assoc()) {
+                if (intval($match["V"]) == intval($equipe["ID_EQUIPE"]))
+                    echo "<option selected='selected' value=".$saison["ID_SAISON"].">".$saison["LABEL"]."</option>";
+                else 
+                    echo "<option value=".$saison["ID_SAISON"].">".$saison["LABEL"]."</option>";
+            }
+        }
+    } else {
+        echo "<option value=".$match["SAISON"].">".$match["LABEL"]."</option>";
+    }
+    echo  "</select>
+            </div>
+            </div>";
+    
+     echo "<div class=\"form-group row\">
+        <label  class=\"col-auto col-form-label col-form-label-sm\">Date</label>
+            <div class=\"col\">";
+    if (!$lock)
+        echo "<input name='date' value='".$match["DATE"]."' type=\"text\" class=\"form-control form-control-sm\">";
+    else {
+        echo "<select class=\"form-control\" name='date'> <option >".$match["DATE"]."</option></select>";
+    }
+     echo "</div>
+        </div>";
+    
+    echo "<div class=\"form-group row\">
+                <label  class=\"col-auto col-form-label col-form-label-sm\">Stade</label>
+                <div class=\"col\">
+                <input type=\"hidden\" name=\"new\" value=true/>
+                <select class=\"form-control\" name='stade' id=\"stade_select\">";
+    if($res3 = $connection->query($requete3)) {
+        while ($stade = $res3->fetch_assoc()) {
+            if (intval($match["STADE"]) == intval($stade["ID_STADE"]))
+                echo "<option selected='selected' value=".$stade["ID_STADE"].">".$stade["NOM_STADE"]." - ".$stade["VILLE"]."</option>";
+            else 
+                echo "<option value=".$stade["ID_STADE"].">".$stade["NOM_STADE"]." - ".$stade["VILLE"]."</option>";
+        }
+    }
+
+    echo  "</select>
+            </div>
+            </div>";
+        
+
+
+                
+    echo "</div>";
+    
+    echo "<div class=\"modal-footer\">";
+    echo "<button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>";
+    echo "<button type='submit' form=\"add\" class=\"btn btn-primary\"";
+    echo ">Modifier";
+
+    echo "</div>";
+    echo "</form>";
+    echo "</div>";
+    echo "</div>";
+    echo "</div>";
+    echo "<script>";
+    echo "$(document).ready(function() {";
+    echo "$('#unique_modal').modal('show');";
+    echo "});";
+    echo "</script>";
+}
 
 function showAllMatchs($connection) {
     $case = 0;
-    $requete = "select S.* , M.DATE_RENCONTRE DATE, G.NOM_CATEGORIE CAT, SA.LABEL S_LABEL
-                from SCORE S inner join SAISON SA on SA.ID_SAISON = S.SAISON
-                inner join EQUIPE E on E.ID_EQUIPE = S.V
-                inner join CATEGORIE G on G.ID_CATEGORIE = E.ID_CATEGORIE
-                inner join RENCONTRE M on M.ID_RENCONTRE = S.RENCONTRE";
+    $requete = "select E_R.ID_EQUIPE R, E_R.NOM_EQUIPE HOME, ifnull(S.SCOREHOME, 0) as SCOREHOME, ifnull(S.SCOREAWAY, 0) as SCOREAWAY, E_V.NOM_EQUIPE AWAY, E_V.ID_EQUIPE V, M.ID_RENCONTRE RENCONTRE, M.ID_SAISON SAISON, M.DATE_RENCONTRE DATE, G.NOM_CATEGORIE CAT, SA.LABEL S_LABEL         
+                    from SCORE S right outer join RENCONTRE M on M.ID_RENCONTRE = S.RENCONTRE
+                    inner join SAISON SA on SA.ID_SAISON = M.ID_SAISON
+                    inner join EQUIPE E_V on E_V.ID_EQUIPE = M.ID_EQUIPE_V
+                    inner join EQUIPE E_R on E_R.ID_EQUIPE = M.ID_EQUIPE_R
+                    inner join CATEGORIE G on G.ID_CATEGORIE = E_V.ID_CATEGORIE";
     if (isset($_GET["id_saison"]) && isset($_GET["id_cat"])) {
         $id_saison = intval($_GET["id_saison"]);
         $id_cat = intval($_GET["id_cat"]);
         
         if ($id_saison != 0 && $id_cat != 0) {
             $case = 3;
-            $requete = "select S.* , M.DATE_RENCONTRE DATE
-                    from SCORE S inner join SAISON SA on SA.ID_SAISON = S.SAISON
-                    inner join EQUIPE E on E.ID_EQUIPE = S.V
-                    inner join CATEGORIE G on G.ID_CATEGORIE = E.ID_CATEGORIE
-                    inner join RENCONTRE M on M.ID_RENCONTRE = S.RENCONTRE
+            $requete = "select E_R.ID_EQUIPE R, E_R.NOM_EQUIPE HOME, ifnull(S.SCOREHOME, 0) as SCOREHOME, ifnull(S.SCOREAWAY, 0) as SCOREAWAY, E_V.NOM_EQUIPE AWAY, E_V.ID_EQUIPE V, M.ID_RENCONTRE RENCONTRE, M.ID_SAISON SAISON, M.DATE_RENCONTRE DATE       
+                    from SCORE S right outer join RENCONTRE M on M.ID_RENCONTRE = S.RENCONTRE
+                    inner join SAISON SA on SA.ID_SAISON = M.ID_SAISON
+                    inner join EQUIPE E_V on E_V.ID_EQUIPE = M.ID_EQUIPE_V
+                    inner join EQUIPE E_R on E_R.ID_EQUIPE = M.ID_EQUIPE_R
+                    inner join CATEGORIE G on G.ID_CATEGORIE = E_V.ID_CATEGORIE
                     where SA.ID_SAISON = ".$id_saison." and G.ID_CATEGORIE = ".$id_cat." ";}
         else if ($id_saison != 0) {
             $case = 2;
-            $requete = "select S.* , M.DATE_RENCONTRE DATE, G.NOM_CATEGORIE CAT
-                    from SCORE S inner join SAISON SA on SA.ID_SAISON = S.SAISON
-                    inner join EQUIPE E on E.ID_EQUIPE = S.V
-                    inner join CATEGORIE G on G.ID_CATEGORIE = E.ID_CATEGORIE
-                    inner join RENCONTRE M on M.ID_RENCONTRE = S.RENCONTRE
+            $requete = "select E_R.ID_EQUIPE R, E_R.NOM_EQUIPE HOME, ifnull(S.SCOREHOME, 0) as SCOREHOME, ifnull(S.SCOREAWAY, 0) as SCOREAWAY, E_V.NOM_EQUIPE AWAY, E_V.ID_EQUIPE V, M.ID_RENCONTRE RENCONTRE, M.ID_SAISON SAISON, M.DATE_RENCONTRE DATE, G.NOM_CATEGORIE CAT       
+                    from SCORE S right outer join RENCONTRE M on M.ID_RENCONTRE = S.RENCONTRE
+                    inner join SAISON SA on SA.ID_SAISON = M.ID_SAISON
+                    inner join EQUIPE E_V on E_V.ID_EQUIPE = M.ID_EQUIPE_V
+                    inner join EQUIPE E_R on E_R.ID_EQUIPE = M.ID_EQUIPE_R
+                    inner join CATEGORIE G on G.ID_CATEGORIE = E_V.ID_CATEGORIE
                     where SA.ID_SAISON = ".$id_saison." ";}
         else if ($id_cat != 0) {
             $case = 1;
-            $requete = "select S.* , M.DATE_RENCONTRE DATE, SA.LABEL S_LABEL
-                    from SCORE S inner join SAISON SA on SA.ID_SAISON = S.SAISON
-                    inner join EQUIPE E on E.ID_EQUIPE = S.V
-                    inner join CATEGORIE G on G.ID_CATEGORIE = E.ID_CATEGORIE
-                    inner join RENCONTRE M on M.ID_RENCONTRE = S.RENCONTRE
+            $requete = "select E_R.ID_EQUIPE R, E_R.NOM_EQUIPE HOME, ifnull(S.SCOREHOME, 0) as SCOREHOME, ifnull(S.SCOREAWAY, 0) as SCOREAWAY, E_V.NOM_EQUIPE AWAY, E_V.ID_EQUIPE V, M.ID_RENCONTRE RENCONTRE, M.ID_SAISON SAISON, M.DATE_RENCONTRE DATE, SA.LABEL S_LABEL         
+                    from SCORE S right outer join RENCONTRE M on M.ID_RENCONTRE = S.RENCONTRE
+                    inner join SAISON SA on SA.ID_SAISON = M.ID_SAISON
+                    inner join EQUIPE E_V on E_V.ID_EQUIPE = M.ID_EQUIPE_V
+                    inner join EQUIPE E_R on E_R.ID_EQUIPE = M.ID_EQUIPE_R
+                    inner join CATEGORIE G on G.ID_CATEGORIE = E_V.ID_CATEGORIE
                     where G.ID_CATEGORIE = ".$id_cat." ";}
     }
     $requete1 = "select * from CATEGORIE";
@@ -190,7 +363,7 @@ function showAllMatchs($connection) {
                     <form method=\"get\" action=\"matchs.php\">
                         <div class=\"col-9\" >
                         <strong>Catégorie </strong>
-                        <select class=\"form-control\" name='id_cat' id=\"cat_select\">";
+                        <select class=\"form-control\" name='id_cat' id=\"cat_select\" onchange=this.form.submit()>";
                         if (intval($id_cat) == 0)
                             echo "<option selected='selected' value=0> All </option>";
                         else 
@@ -204,7 +377,7 @@ function showAllMatchs($connection) {
                         }
                         echo "</select>";
                         echo "<strong> Saison </strong>";
-                        echo "<select class=\"form-control\" name='id_saison' id=\"saison_select\">";
+                        echo "<select class=\"form-control\" name='id_saison' id=\"saison_select\" onchange=this.form.submit()>";
                         if (intval($id_saison) == 0)
                             echo "<option selected='selected' value=0> All </option>";
                         else 
@@ -218,9 +391,7 @@ function showAllMatchs($connection) {
                         }
                         echo "</select>
                         </div>
-                        <div class=\"col-7\" >
-                        <button type=\"submit\" class=\"btn btn-primary\">Selectionner
-                        </div>
+                    
                     </form></div>
 					<div class=\"col\" style=\"width:50\">
 						<a href=\"matchs.php?new=true\" class=\"btn btn-success\"><i class=\"material-icons\">&#xE147;</i> <span>Ajouter Match</span></a>
@@ -258,8 +429,10 @@ function showAllMatchs($connection) {
                 echo "<td>".$match["CAT"]."</td>";
             if ($case != 2 && $case != 3)
                 echo "<td>".$match["S_LABEL"]."</td>";
-            echo "<td>  <a href=\"matchs.php?id_match=".$match["RENCONTRE"]."&amp;edit=enter\"><i class=\"material-icons\">edit</i></a>
-                        <a href=\"equipes.php?id_match=".$match["RENCONTRE"]."&amp;delete=true\"><i class=\"material-icons\">delete</i></a></td>";
+            echo "<td>  <a href=\"feuilleMatch.php?match=".$match["RENCONTRE"]."\"><i class=\"material-icons\">assignment</i></a>
+                        <a href=\"matchs.php?match=".$match["RENCONTRE"]."&amp;edit=enter\"><i class=\"material-icons\">edit</i></a>
+                        <a href=\"gestionMatch.php?match=".$match["RENCONTRE"]."&amp;delete=true\"><i class=\"material-icons\">delete</i></a></td>";
+            
             echo "</tr>";
       }
       $connection->close();
@@ -277,6 +450,9 @@ function showAllMatchs($connection) {
                 getAddForm($connection, $_GET["cat"]);
             else 
                 getAddForm($connection, 0);
+        else if(isset($_GET["match"]) && isset($_GET["edit"]))
+            getUpdateForm($connection, $_GET["match"]);
+            
         showAllMatchs($connection);
     ?>
 </div>
