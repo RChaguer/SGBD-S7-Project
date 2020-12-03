@@ -84,6 +84,7 @@ create table SAISON
     ID_SAISON             INT           not null   auto_increment,
     DATE_DEBUT            DATE                  ,
     DATE_FIN              DATE                  ,
+    LABEL                 CHAR(20)            , 
     constraint pk_saison primary key (ID_SAISON)
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

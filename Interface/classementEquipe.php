@@ -11,7 +11,7 @@ include "connect.php";
 function showClassementEquipe($connection) {
     $case = 0;
     $requete = "select  RANK() OVER(
-                                order by (3*SUM(WINS) + SUM(DRAWS)) desc) R,
+                                order by SUM(SCORE) desc) R,
                         TS.ID_EQUIPE,
                         TS.NOM_EQUIPE as NOM,
                         C.NOM_CLUB,
@@ -19,14 +19,13 @@ function showClassementEquipe($connection) {
                         SUM(WINS) as WINS,
                         SUM(DRAWS) as DRAWS,
                         SUM(LOSSES) as LOSSES,
-                        (3*SUM(WINS) + SUM(DRAWS)) as SCORE,
-                        SUM(ifnull(SOMME_POINTS_MARQUES,0)) as BUTS_M, 
-                        SUM(ifnull(neg,0)) as BUTS_R,
-                        SUM(ifnull(SOMME_POINTS_MARQUES+neg,0)) as DIFFERENCE
-                from TABLE_S TS left outer join AVG_CURRENT AC on TS.ID_EQUIPE = AC.V and TS.ID_SAISON = AC.SAISON
-                                left outer join NEG_CURRENT NC on AC.V = NC.R and TS.ID_SAISON = NC.SAISON
-                                inner join CATEGORIE G on TS.ID_CATEGORIE=G.ID_CATEGORIE
-                                inner join CLUB C on TS.ID_CLUB = C.ID_CLUB
+                        SUM(SCORE) as SCORE,
+                        SUM(SOMME_POINTS_MARQUES) as BUTS_M, 
+                        SUM(SOMME_POINTS_RECUS) as BUTS_R,
+                        SUM(DIFFERENCE) as DIFFERENCE
+                from TABLE_S TS 
+                        inner join CATEGORIE G on TS.ID_CATEGORIE=G.ID_CATEGORIE
+                        inner join CLUB C on TS.ID_CLUB = C.ID_CLUB
                 group by TS.ID_EQUIPE";
     if (isset($_GET["id_saison"]) && isset($_GET["id_cat"])) {
         $id_saison = intval($_GET["id_saison"]);
@@ -35,45 +34,43 @@ function showClassementEquipe($connection) {
         if ($id_saison != 0 && $id_cat != 0) {
             $case = 3;
             $requete = "select  RANK() OVER(
-                                order by (3*SUM(WINS) + SUM(DRAWS)) desc) R,
+                                order by SCORE desc) R,
                                 TS.ID_EQUIPE,
                                 TS.NOM_EQUIPE as NOM,
                                 C.NOM_CLUB,
                                 G.NOM_CATEGORIE,
-                                SUM(WINS) as WINS,
-                                SUM(DRAWS) as DRAWS,
-                                SUM(LOSSES) as LOSSES,
-                                (3*SUM(WINS) + SUM(DRAWS)) as SCORE,
-                                ifnull(SOMME_POINTS_MARQUES,0) as BUTS_M, 
-                                ifnull(neg,0) as BUTS_R,
-                                ifnull(SOMME_POINTS_MARQUES+neg,0) as DIFFERENCE, 
-                                ifnull(MOYENNE_POINTS_MARQUES,0) as MOYENNE
-                        from TABLE_S TS left outer join AVG_CURRENT AC on TS.ID_EQUIPE = AC.V and TS.ID_SAISON = AC.SAISON
-                                        left outer join NEG_CURRENT NC on AC.V = NC.R and TS.ID_SAISON = NC.SAISON
-                                        inner join CATEGORIE G on TS.ID_CATEGORIE=G.ID_CATEGORIE
-                                        inner join CLUB C on TS.ID_CLUB = C.ID_CLUB
+                                WINS,
+                                DRAWS,
+                                LOSSES,
+                                SCORE,
+                                SOMME_POINTS_MARQUES as BUTS_M, 
+                                SOMME_POINTS_RECUS as BUTS_R,
+                                DIFFERENCE, 
+                                MOYENNE_POINTS_MARQUES as MOYENNE
+                        from TABLE_S TS 
+                                inner join CATEGORIE G on TS.ID_CATEGORIE=G.ID_CATEGORIE
+                                inner join CLUB C on TS.ID_CLUB = C.ID_CLUB
                         where TS.ID_SAISON = ".$id_saison." and TS.ID_CATEGORIE = ".$id_cat." 
                         group by TS.ID_EQUIPE";}
         else if ($id_saison != 0) {
             $case = 2;
             $requete = "select  RANK() OVER(
-                                order by (3*SUM(WINS) + SUM(DRAWS)) desc) R,
+                                order by SCORE desc) R,
                                 TS.ID_EQUIPE,
                                 TS.NOM_EQUIPE as NOM,
                                 C.NOM_CLUB,
                                 G.NOM_CATEGORIE,
-                                SUM(WINS) as WINS,
-                                SUM(DRAWS) as DRAWS,
-                                SUM(LOSSES) as LOSSES,
-                                (3*SUM(WINS) + SUM(DRAWS)) as SCORE,
-                                ifnull(SOMME_POINTS_MARQUES,0) as BUTS_M, 
-                                ifnull(neg,0) as BUTS_R,
-                                ifnull(SOMME_POINTS_MARQUES+neg,0) as DIFFERENCE, 
-                                ifnull(MOYENNE_POINTS_MARQUES,0) as MOYENNE
-                        from TABLE_S TS left outer join AVG_CURRENT AC on TS.ID_EQUIPE = AC.V and TS.ID_SAISON = AC.SAISON
-                                        left outer join NEG_CURRENT NC on AC.V = NC.R and TS.ID_SAISON = NC.SAISON
-                                        inner join CATEGORIE G on TS.ID_CATEGORIE=G.ID_CATEGORIE
-                                        inner join CLUB C on TS.ID_CLUB = C.ID_CLUB
+                                WINS,
+                                DRAWS,
+                                LOSSES,
+                                SCORE,
+                                SOMME_POINTS_MARQUES as BUTS_M, 
+                                SOMME_POINTS_RECUS as BUTS_R,
+                                DIFFERENCE, 
+                                MOYENNE_POINTS_MARQUES as MOYENNE
+                        from TABLE_S TS 
+                                inner join CATEGORIE G on TS.ID_CATEGORIE=G.ID_CATEGORIE
+                                inner join CLUB C on TS.ID_CLUB = C.ID_CLUB
                         where TS.ID_SAISON = ".$id_saison." 
                         group by TS.ID_EQUIPE";}
         else if ($id_cat != 0) {
@@ -87,14 +84,13 @@ function showClassementEquipe($connection) {
                                 SUM(WINS) as WINS,
                                 SUM(DRAWS) as DRAWS,
                                 SUM(LOSSES) as LOSSES,
-                                (3*SUM(WINS) + SUM(DRAWS)) as SCORE,
-                                ifnull(SOMME_POINTS_MARQUES,0) as BUTS_M, 
-                                ifnull(neg,0) as BUTS_R,
-                                ifnull(SOMME_POINTS_MARQUES+neg,0) as DIFFERENCE
-                        from TABLE_S TS left outer join AVG_CURRENT AC on TS.ID_EQUIPE = AC.V and TS.ID_SAISON = AC.SAISON
-                                        left outer join NEG_CURRENT NC on AC.V = NC.R and TS.ID_SAISON = NC.SAISON
-                                        inner join CATEGORIE G on TS.ID_CATEGORIE=G.ID_CATEGORIE
-                                        inner join CLUB C on TS.ID_CLUB = C.ID_CLUB
+                                SUM(SCORE) as SCORE,
+                                SUM(SOMME_POINTS_MARQUES) as BUTS_M, 
+                                SUM(SOMME_POINTS_RECUS) as BUTS_R,
+                                SUM(DIFFERENCE) as DIFFERENCE
+                        from TABLE_S TS
+                                inner join CATEGORIE G on TS.ID_CATEGORIE=G.ID_CATEGORIE
+                                inner join CLUB C on TS.ID_CLUB = C.ID_CLUB
                         where TS.ID_CATEGORIE = ".$id_cat." 
                         group by TS.ID_EQUIPE";}
     }

@@ -11,15 +11,15 @@ include "connect.php";
 <?php
 function showAllClassement($connection) {
     $requete="select ROW_NUMBER() OVER(
-                order by SCORE desc ) RANG ,
+                order by (3*IFNULL(SUM(WINS), 0) + IFNULL(SUM(DRAWS), 0)) desc ) RANG ,
               CLUB.ID_CLUB ID,
               CLUB.NOM_CLUB NOM,
-              IFNULL(SUM(RANK_CLUB.WINS), 0) WINS,
-              IFNULL(SUM(RANK_CLUB.DRAWS), 0) DRAWS,
-              IFNULL(SUM(RANK_CLUB.LOSSES), 0) LOSSES,
+              IFNULL(SUM(STATS_CLUBS.WINS), 0) WINS,
+              IFNULL(SUM(STATS_CLUBS.DRAWS), 0) DRAWS,
+              IFNULL(SUM(STATS_CLUBS.LOSSES), 0) LOSSES,
               (3*IFNULL(SUM(WINS), 0) + IFNULL(SUM(DRAWS), 0)) as SCORE
-        from RANK_CLUB right outer join CLUB on RANK_CLUB.ID_CLUB = CLUB.ID_CLUB
-        group by RANK_CLUB.ID_CLUB";
+        from STATS_CLUBS right outer join CLUB on STATS_CLUBS.ID_CLUB = CLUB.ID_CLUB
+        group by STATS_CLUBS.ID_CLUB";
     $requete_s="select ID_SAISON as ID, LABEL
                 from SAISON";
     if($res = $connection->query($requete)) {
@@ -73,16 +73,16 @@ function showAllClassement($connection) {
 
 function showAllClassementBySaison($connection, $id) {
     $requete="select ROW_NUMBER() OVER(
-                order by SCORE desc ) RANG ,
+                order by (3*IFNULL(WINS, 0) + IFNULL(DRAWS, 0)) desc ) RANG ,
               CLUB.ID_CLUB ID,
               CLUB.NOM_CLUB NOM,
-              IFNULL(RANK_CLUB.WINS, 0) WINS,
-              IFNULL(RANK_CLUB.DRAWS, 0) DRAWS,
-              IFNULL(RANK_CLUB.LOSSES, 0) LOSSES,
+              IFNULL(STATS_CLUBS.WINS, 0) WINS,
+              IFNULL(STATS_CLUBS.DRAWS, 0) DRAWS,
+              IFNULL(STATS_CLUBS.LOSSES, 0) LOSSES,
               (3*IFNULL(WINS, 0) + IFNULL(DRAWS, 0)) as SCORE
-        from RANK_CLUB right outer join CLUB on RANK_CLUB.ID_CLUB = CLUB.ID_CLUB
-        where RANK_CLUB.ID_SAISON = ".$id."
-        group by RANK_CLUB.ID_CLUB";
+        from STATS_CLUBS right outer join CLUB on STATS_CLUBS.ID_CLUB = CLUB.ID_CLUB
+        where STATS_CLUBS.ID_SAISON = ".$id."
+        group by STATS_CLUBS.ID_CLUB";
     $requete_s="select ID_SAISON as ID, LABEL
                 from SAISON";
     

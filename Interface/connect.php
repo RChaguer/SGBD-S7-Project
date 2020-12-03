@@ -2,7 +2,7 @@
   $host = 'localhost';
   $login = 'root';
   $db_pwd = NULL;
-  $base_name = 'handball' ;
+  $base_name = 'handb' ;
   /* Creation de l'objet qui gere la connexion: */
   $connection = new mysqli($host, $login, $db_pwd, $base_name);
 
