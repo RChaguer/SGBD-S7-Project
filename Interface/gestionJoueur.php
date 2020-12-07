@@ -3,10 +3,8 @@ ob_start();
 include "connect.php";
 include "header.php";
 
-// Required field names
 $required = array('nom', 'prenom', 'adresse', 'num_lic', 'date');
 
-// Loop over field names, make sure each one exists and is not empty
 $error = !(isset($_GET['id_joueur']) || isset($_GET['new']));
 
 foreach($required as $field) {
@@ -30,17 +28,16 @@ $date = $_POST["date"];
 if (isset($_GET['id_joueur'])) {
     $id = $_GET["id_joueur"];
 
-    $requete_jou = "update JOUEUR set NUMERO_LICENCE = ".$num_lic.", DATE_NAISSANCE = \"".$date."\" where ID_JOUEUR = ?;";
+    $requete_jou = "update JOUEUR set NUMERO_LICENCE = ?, DATE_NAISSANCE = ? where ID_JOUEUR = ?;";
                 
     $requete_ind = "update INDIVIDU
-                set NOM_INDIVIDU = '".$nom."', PRENOM_INDIVIDU = '".$prenom."', ADRESSE = '".$adresse."'
+                set NOM_INDIVIDU = ?, PRENOM_INDIVIDU = ?, ADRESSE = ?
                 where ID_INDIVIDU = ?;";
-    console_log($requete_jou);
     if($res_jou = $connection->prepare($requete_jou)){
-        $res_jou->bind_param('i', $id);
+        $res_jou->bind_param('isi', $num_lic, $date, $id);
         $res_jou->execute();
         if ( $res_ind = $connection->prepare($requete_ind) ) {
-            $res_ind->bind_param('i', $id);
+            $res_ind->bind_param('sssi', $nom, $prenom, $adresse, $id);
             $res_ind->execute();
         } else {
         console_log("erreur de requete update");
@@ -51,17 +48,22 @@ if (isset($_GET['id_joueur'])) {
     
 } else if (isset($_GET['new'])) {
     $requete_ind = "insert into INDIVIDU (NOM_INDIVIDU, PRENOM_INDIVIDU, ADRESSE) 
-                values (\"".$nom."\", \"".$prenom."\", \"".$adresse."\");";
+                values (?, ?, ?);";
     
     if($res_ind = $connection->prepare($requete_ind)) {
+        $res_ind->bind_param('sss', $nom, $prenom, $adresse);
         $res_ind->execute();
         $new_id = $connection->insert_id;
         $requete_spo = "insert into SPORTIF (ID_SPORTIF) 
-                        values (".$new_id."); ";
+                        values (?; ";
         $requete_jou = "insert into JOUEUR (ID_JOUEUR, NUMERO_LICENCE, DATE_NAISSANCE) 
-                        values (".$new_id.", ".$num_lic.", \"".$date."\");";
+                        values (?, ?, ?);";
     
-        if($res_spo = $connection->query($requete_spo) && $res_jou = $connection->query($requete_jou)) {
+        if($res_spo = $connection->prepare($requete_spo) && $res_jou = $connection->prepare($requete_jou)) {
+            $res_spo->bind_param('i', $new_id); 
+            $res_spo->execute();
+            $res_jou->bind_param('iis', $new_id, $num_lic, $date); 
+            $res_jou->execute();
             console_log("done");
         } else {
             console_log("erreur de requete d\'ajout");

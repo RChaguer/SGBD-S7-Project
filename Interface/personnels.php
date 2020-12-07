@@ -21,11 +21,13 @@ function getUpdateForm($connection, $id) {
     echo "<form method=\"post\" action=\"gestionPersonnel.php?id_perso=".$id."\">";
     echo "<div class=\"modal-body\">";
     $requete0 = "select I.ID_INDIVIDU ID, I.NOM_INDIVIDU NOM, I.PRENOM_INDIVIDU PRENOM, I.ADRESSE ADR, P.ID_CLUB CLUB
-                from (INDIVIDU I inner join PERSONNEL P on I.ID_INDIVIDU = P.ID_PERSONNEL) where I.ID_INDIVIDU = ".$id."; ";
+                from (INDIVIDU I inner join PERSONNEL P on I.ID_INDIVIDU = P.ID_PERSONNEL) where I.ID_INDIVIDU = ?; ";
     $requete1 = "SELECT ID_CLUB, NOM_CLUB
                 from CLUB;";
-    if ($res = $connection->query($requete0)) {
-        $perso = $res->fetch_assoc();
+    if ($res = $connection->prepare($requete0)) {
+        $res->bind_param('i', $id);
+        $res->execute();
+        $perso = $res->get_result()->fetch_assoc();
         echo "<div class=\"form-group row\">
                 <label  class=\"col-auto col-form-label col-form-label-sm\">Nom</label>
                 <div class=\"col\">

@@ -11,9 +11,11 @@ include "connect.php";
 function getUpdateForm($connection, $id) {
     $requete="select NOM_ROLE
                 from ROLE 
-                where ID_ROLE=".$id.";";
-    if($res = $connection->query($requete)) {
-        $role = $res->fetch_assoc();
+                where ID_ROLE=?;";
+    if($res = $connection->prepare($requete)) {
+        $res->bind_param('i', $id);
+        $res->execute();
+        $role = $res->get_result()->fetch_assoc();
     } else {
         header("Location : roles.php");
         exit();
@@ -111,7 +113,6 @@ function showAllRoles($connection) {
     $requete="select ID_ROLE ID, NOM_ROLE NOM
                 from ROLE;";
 
-  /* execute la requete */
     if($res = $connection->query($requete)) {
         echo "
             <div class=\"table-title\">

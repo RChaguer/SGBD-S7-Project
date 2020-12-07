@@ -3,10 +3,8 @@ ob_start();
 include "connect.php";
 include "header.php";
 
-// Required field names
 $required = array('nom', 'prenom', 'adresse');
 
-// Loop over field names, make sure each one exists and is not empty
 $error = !(isset($_GET['id_entrain']) || isset($_GET['new']));
 
 foreach($required as $field) {
@@ -30,11 +28,11 @@ if (isset($_GET['id_entrain'])) {
     $id = $_GET["id_entrain"];
                 
     $requete_ind = "update INDIVIDU
-                set NOM_INDIVIDU = '".$nom."', PRENOM_INDIVIDU = '".$prenom."', ADRESSE = '".$adresse."'
+                set NOM_INDIVIDU = ?, PRENOM_INDIVIDU = ?, ADRESSE = ?
                 where ID_INDIVIDU = ?;";
 
     if ( $res_ind = $connection->prepare($requete_ind) ) {
-        $res_ind->bind_param('i', $id);
+        $res_ind->bind_param('sssi', $nom, $prenom, $adresse, $id);
         $res_ind->execute();
     } else {
         console_log("erreur de requete update");
@@ -43,16 +41,18 @@ if (isset($_GET['id_entrain'])) {
  
 } else if (isset($_GET['new'])) {
     $requete_ind = "insert into INDIVIDU (NOM_INDIVIDU, PRENOM_INDIVIDU, ADRESSE) 
-                values (\"".$nom."\", \"".$prenom."\", \"".$adresse."\");";
+                values (?, ?, ?);";
     
     if($res_ind = $connection->prepare($requete_ind)) {
+        $res_ind->bind_param('sss', $nom, $prenom, $adresse);
         $res_ind->execute();
         $new_id = $connection->insert_id;
         $requete_spo = "insert into SPORTIF (ID_SPORTIF) 
-                        values (".$new_id."); ";
+                        values (?); ";
     
-        if($res_spo = $connection->query($requete_spo)) {
-            console_log("done");
+        if($res_spo = $connection->prepare($requete_spo)) {
+            $res_ind->bind_param('i', $new_id);
+            $res_ind->execute();
         } else {
             console_log("erreur de requete d\'ajout");
         }

@@ -13,7 +13,7 @@ function getAddForm($connection, $id_cat) {
                 from CATEGORIE;";
     $requete1 = "SELECT ID_EQUIPE, NOM_EQUIPE 
                 from EQUIPE 
-                where ID_CATEGORIE=".$id_cat.";";
+                where ID_CATEGORIE= ?;";
     $requete2 = "SELECT ID_SAISON, LABEL
                 from SAISON;";
     $requete3 = "SELECT ID_STADE, NOM_STADE, VILLE
@@ -55,10 +55,9 @@ function getAddForm($connection, $id_cat) {
                     <label  class=\"col-auto col-form-label col-form-label-sm\">Catégorie</label>
                     <div class=\"col\">
                     <input type=\"hidden\" name=\"new\" value=true/>
-                    <select class=\"form-control\" name='cat' id=\"cat_select0\" onchange=\"this.form
-                    .submit()\">";
+                    <select class=\"form-control\" name='cat' id=\"cat_select0\" onchange=\"window.location.href='matchs.php?new=true'\">";
             while ($cat = $res0->fetch_assoc()) {
-                if (intval($id_cat) == $cat["ID_CATEGORIE"])
+                if (intval($id_cat) == intval($cat["ID_CATEGORIE"]))
                     echo "<option selected='selected' value=".$cat["ID_CATEGORIE"].">".$cat["NOM_CATEGORIE"]."</option>";
                 else 
                     echo "<option value=".$cat["ID_CATEGORIE"].">".$cat["NOM_CATEGORIE"]."</option>";
@@ -67,26 +66,33 @@ function getAddForm($connection, $id_cat) {
                     </div>
                     </div>";
             }
-        if($res1 = $connection->query($requete1)) {
+        if($res1 = $connection->prepare($requete1)) {
+            $res1->bind_param('i', $id_cat);
+            $res1->execute();
+            $result1 = $res1->get_result();
             echo "<div class=\"form-group row\">
                     <label  class=\"col-auto col-form-label col-form-label-sm\">Eq. à Domicile</label>
                     <div class=\"col\">
                     <input type=\"hidden\" name=\"new\" value=true/>
                     <select class=\"form-control\" name='id_home' id=\"equipe_select1\">";
-            while ($equipe = $res1->fetch_assoc()) {
+            while ($equipe = $result1->fetch_assoc()) {
                 echo "<option value=".$equipe["ID_EQUIPE"].">".$equipe["NOM_EQUIPE"]."</option>";
             }
             echo   "</select>
                     </div>
                     </div>";
-            }
-        if($res1 = $connection->query($requete1)) {
+        }
+        
+        if($res1 = $connection->prepare($requete1)) {
+            $res1->bind_param('i', $id_cat);
+            $res1->execute();
+            $result1 = $res1->get_result();
             echo "<div class=\"form-group row\">
                     <label  class=\"col-auto col-form-label col-form-label-sm\">Eq. Visiteuse</label>
                     <div class=\"col\">
                     <input type=\"hidden\" name=\"new\" value=true/>
                     <select class=\"form-control\" name='id_away' id=\"equipe_select2\" >";
-            while ($equipe = $res1->fetch_assoc()) {
+            while ($equipe = $result1->fetch_assoc()) {
                 echo "<option value=".$equipe["ID_EQUIPE"].">".$equipe["NOM_EQUIPE"]."</option>";
             }
             echo   "</select>
@@ -150,8 +156,11 @@ function getAddForm($connection, $id_cat) {
 function getUpdateForm($connection, $id) {
     $requete_lock = "SELECT ID_PARTICIPATION
                     from PARTICIPATION
-                    where ID_RENCONTRE=".$id.";";
-    if($lock = $connection->query($requete_lock)) {
+                    where ID_RENCONTRE=?;";
+    if($lock = $connection->prepare($requete_lock)) {
+        $lock->bind_param('i', $id);
+        $lock->execute();
+        $lock = $lock->get_result();
         if (mysqli_num_rows($lock)==0)
             $lock = false;
         else 
@@ -163,10 +172,12 @@ function getUpdateForm($connection, $id) {
                     inner join EQUIPE E_V on R.ID_EQUIPE_V = E_V.ID_EQUIPE
                     inner join SAISON S on R.ID_SAISON = S.ID_SAISON
                     inner join STADE ST on R.ID_STADE = ST.ID_STADE
-                    where R.ID_RENCONTRE = ".$id."";
-    if ($match = $connection->query($requete_id))
-        $match = $match->fetch_assoc();
-    else 
+                    where R.ID_RENCONTRE = ?";
+    if ($res_id = $connection->prepare($requete_id)) {
+        $res_id->bind_param('i', $id);
+        $res_id->execute();
+        $match = $res_id->get_result()->fetch_assoc();
+    } else 
         exit();
     
     if (!$lock) {
@@ -327,7 +338,7 @@ function showAllMatchs($connection) {
                     inner join EQUIPE E_V on E_V.ID_EQUIPE = M.ID_EQUIPE_V
                     inner join EQUIPE E_R on E_R.ID_EQUIPE = M.ID_EQUIPE_R
                     inner join CATEGORIE G on G.ID_CATEGORIE = E_V.ID_CATEGORIE
-                    where SA.ID_SAISON = ".$id_saison." and G.ID_CATEGORIE = ".$id_cat." ";}
+                    where SA.ID_SAISON = ? and G.ID_CATEGORIE = ? ";}
         else if ($id_saison != 0) {
             $case = 2;
             $requete = "select E_R.ID_EQUIPE R, E_R.NOM_EQUIPE HOME, ifnull(S.SCOREHOME, 0) as SCOREHOME, ifnull(S.SCOREAWAY, 0) as SCOREAWAY, E_V.NOM_EQUIPE AWAY, E_V.ID_EQUIPE V, M.ID_RENCONTRE RENCONTRE, M.ID_SAISON SAISON, M.DATE_RENCONTRE DATE, G.NOM_CATEGORIE CAT       
@@ -336,7 +347,7 @@ function showAllMatchs($connection) {
                     inner join EQUIPE E_V on E_V.ID_EQUIPE = M.ID_EQUIPE_V
                     inner join EQUIPE E_R on E_R.ID_EQUIPE = M.ID_EQUIPE_R
                     inner join CATEGORIE G on G.ID_CATEGORIE = E_V.ID_CATEGORIE
-                    where SA.ID_SAISON = ".$id_saison." ";}
+                    where SA.ID_SAISON = ? ";}
         else if ($id_cat != 0) {
             $case = 1;
             $requete = "select E_R.ID_EQUIPE R, E_R.NOM_EQUIPE HOME, ifnull(S.SCOREHOME, 0) as SCOREHOME, ifnull(S.SCOREAWAY, 0) as SCOREAWAY, E_V.NOM_EQUIPE AWAY, E_V.ID_EQUIPE V, M.ID_RENCONTRE RENCONTRE, M.ID_SAISON SAISON, M.DATE_RENCONTRE DATE, SA.LABEL S_LABEL         
@@ -345,11 +356,31 @@ function showAllMatchs($connection) {
                     inner join EQUIPE E_V on E_V.ID_EQUIPE = M.ID_EQUIPE_V
                     inner join EQUIPE E_R on E_R.ID_EQUIPE = M.ID_EQUIPE_R
                     inner join CATEGORIE G on G.ID_CATEGORIE = E_V.ID_CATEGORIE
-                    where G.ID_CATEGORIE = ".$id_cat." ";}
+                    where G.ID_CATEGORIE = ? ";}
     }
+    if ($res = $connection->prepare($requete)) {
+        switch ($case) {
+            case 0:
+                $res->execute();
+                break;
+            case 1:
+                $res->bind_param('i', $id_cat);
+                $res->execute();
+                break;
+            case 2:
+                $res->bind_param('i', $id_saison);
+                $res->execute();
+                break;
+            case 3:
+                $res->bind_param('ii', $id_saison, $id_cat);
+                $res->execute();
+                break;
+        }
+        $res = $res->get_result();
+    } else 
+        exit();
     $requete1 = "select * from CATEGORIE";
     $requete2 = "select * from SAISON";
-    $res = $connection->query($requete);
     $res1 = $connection->query($requete1);
     $res2 = $connection->query($requete2);
     if($res && $res1 && $res2) {

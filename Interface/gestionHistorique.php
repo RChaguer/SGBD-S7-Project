@@ -39,18 +39,26 @@ if (isset($_GET['id_histo'])) {
         console_log("error de requete update");
     }
 } else if (isset($_GET['new'])) {
-    if (empty($_POST["date_f"]))
+    if (empty($_POST["date_f"])) {
         $requete = "insert into HISTORIQUE (ID_SPORTIF, ID_EQUIPE, DATE_DEBUT)
-                values (".$id_sportif.", ".$id_equipe.", '".$date_d."');";
-    else 
-        $requete = "insert into HISTORIQUE (ID_SPORTIF, ID_EQUIPE, DATE_DEBUT, DATE_FIN)
-                values (".$id_sportif.", ".$id_equipe.", '".$date_d."', '".$date_f."');";
-
-    if($res = $connection->prepare($requete)) {
-        $res->execute();
+                values (?, ?, ?);";
+        if($res = $connection->prepare($requete)) {
+            $res->bind_param('iis', $id_sportif, $id_equipe, $date_d);
+            $res->execute();
+        } else {
+            console_log("error de requete d'ajout");
+        }
     } else {
-        console_log("error de requete d'ajout");
+        $requete = "insert into HISTORIQUE (ID_SPORTIF, ID_EQUIPE, DATE_DEBUT, DATE_FIN)
+                values (?, ?, ?, ?);";
+        if($res = $connection->prepare($requete)) {
+            $res->bind_param('iiss', $id_sportif, $id_equipe, $date_d, $date_f);
+            $res->execute();
+        } else {
+            console_log("error de requete d'ajout");
     }
+    }
+
 }
 $connection->close();
 header("Location: historique.php");

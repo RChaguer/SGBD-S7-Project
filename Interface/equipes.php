@@ -68,16 +68,19 @@ function showOneEquipe($connection, $id) {
         console_log("error");
     }
 }
+
 function getUpdateForm($connection, $id) {
     $requete0 = "SELECT NOM_EQUIPE, ID_CLUB, ID_CATEGORIE
                 from EQUIPE
-                where ID_EQUIPE=".$id.";";
+                where ID_EQUIPE=?;";
     $requete1 = "SELECT ID_CLUB, NOM_CLUB
                 from CLUB;";
     $requete2 = "SELECT ID_CATEGORIE, NOM_CATEGORIE
                 from CATEGORIE;";
-     if($res0 = $connection->query($requete0)) {
-        $equipe = $res0->fetch_assoc();
+     if($res0 = $connection->prepare($requete0)) {
+        $res0->bind_param('i', $id);
+        $res0->execute();
+        $equipe = $res0->get_result()->fetch_assoc();
     } else {
         console_log("Erreur de mise à jour");
         exit();
@@ -107,7 +110,7 @@ function getUpdateForm($connection, $id) {
                 <div class=\"col\">
                 <select class=\"form-control\" name='club' id=\"club_select\">";
         while ($club = $res1->fetch_assoc()) {
-                if (intval(equipe["ID_CLUB"]) == intval($club["ID_CLUB"])) {
+                if (intval($equipe["ID_CLUB"]) == intval($club["ID_CLUB"])) {
                     echo "<option selected=\"selected\""; }
                 else {
                     echo "<option ";
@@ -125,7 +128,7 @@ function getUpdateForm($connection, $id) {
                 <div class=\"col\">
                 <select class=\"form-control\" name='cat' id=\"club_select\">";
         while ($cat = $res2->fetch_assoc()) {
-                if (intval(equipe["ID_CATEGORIE"]) == intval($cat["ID_CATEGORIE"])) {
+                if (intval($equipe["ID_CATEGORIE"]) == intval($cat["ID_CATEGORIE"])) {
                     echo "<option selected=\"selected\""; }
                 else {
                     echo "<option ";

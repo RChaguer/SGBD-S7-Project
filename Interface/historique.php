@@ -11,13 +11,15 @@ include "connect.php";
 function getUpdateForm($connection, $id) {
     $requete0 = "SELECT *
                 from HISTORIQUE
-                where ID_HISTORIQUE=".$id.";";
+                where ID_HISTORIQUE=?;";
     $requete1 = "SELECT S.ID_SPORTIF ID, I.NOM_INDIVIDU NOM, I.PRENOM_INDIVIDU PRENOM
                 from SPORTIF S inner join INDIVIDU I on I.ID_INDIVIDU = S.ID_SPORTIF ;";
     $requete2 = "SELECT ID_EQUIPE, NOM_EQUIPE
                 from EQUIPE;";
-   if($res0 = $connection->query($requete0)) {
-        $histo = $res0->fetch_assoc();
+   if($res0 = $connection->prepare($requete0)) {
+        $res0->bind_param('i', $id);
+        $res0->execute();
+        $histo = $res0->get_result()->fetch_assoc();
     } else {
         console_log("Erreur de mise à jour");
         exit();

@@ -22,9 +22,11 @@ function getUpdateForm($connection, $id) {
     echo "<div class=\"modal-body\">";
     
     $requete = "select P.ID_JOUEUR ID, I.NOM_INDIVIDU NOM, I.PRENOM_INDIVIDU PRENOM, I.ADRESSE ADR, P.NUMERO_LICENCE NUM_LIC, P.DATE_NAISSANCE DATE
-                from (INDIVIDU I inner join JOUEUR P on I.ID_INDIVIDU = P.ID_JOUEUR) where I.ID_INDIVIDU = ".$id."; ";
-    if ($res = $connection->query($requete)) {
-        $joueur = $res->fetch_assoc();
+                from (INDIVIDU I inner join JOUEUR P on I.ID_INDIVIDU = P.ID_JOUEUR) where I.ID_INDIVIDU = ?; ";
+    if ($res = $connection->prepare($requete)) {
+        $res->bind_param('i', $id);
+        $res->execute();
+        $joueur = $res->get_result()->fetch_assoc();
         echo "<div class=\"form-group row\">
                 <label  class=\"col-auto col-form-label col-form-label-sm\">Nom</label>
                 <div class=\"col\">

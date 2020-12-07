@@ -46,21 +46,26 @@ if (isset($_GET['delete'])) {
         $id = $_GET["match"];
 
         $requete = "update RENCONTRE
-                    set ID_SAISON = ".$saison.", ID_STADE = ".$stade.", ID_EQUIPE_R = ".$id_home.", ID_EQUIPE_V = ".$id_away.", DATE_RENCONTRE = '".$date."'
+                    set ID_SAISON = ?, ID_STADE = ?, ID_EQUIPE_R = ?, ID_EQUIPE_V = ?, DATE_RENCONTRE = ?
                     where ID_RENCONTRE = ?;";
 
     if($res = $connection->prepare($requete)) {
-        $res->bind_param('i', $id);
+        $res->bind_param('iiiisi', $saison, $stade, $id_home, $id_away, $date, $id);
         $res->execute();
     } else {
         console_log("error de requete update");
     }
     } else if (isset($_GET['new'])) {
-    $requete = "insert into RENCONTRE (ID_SAISON, ID_STADE, ID_EQUIPE_R, ID_EQUIPE_V, DATE_RENCONTRE)
-                values (".$saison.", ".$stade.", ".$id_home.", ".$id_away.", '".$date."');";
-
-    if($res = $connection->prepare($requete)) {
-        $res->execute();
+        $requete = "insert into RENCONTRE (ID_SAISON, ID_STADE, ID_EQUIPE_R, ID_EQUIPE_V, DATE_RENCONTRE)
+                    values (?, ?, ?, ?, ?);";
+        console_log($saison);
+        console_log($stade);
+        console_log($id_home);
+        console_log($id_away);
+        console_log($date);
+        if($res = $connection->prepare($requete)) {
+            $res->bind_param('iiiis', $saison, $stade, $id_home, $id_away, $date);
+            $res->execute();
     } else {
         console_log("error de requete d'ajout");
     }

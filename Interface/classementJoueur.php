@@ -40,7 +40,7 @@ function showClassementJoueur($connection) {
                             ifnull(avg(NULLIF(`MOYENNE_BUTS`,0)),0) as MOYENNE,
                             CJ.ID_SAISON
                     from CLASS_JOUEUR CJ inner join INDIVIDU I on CJ.ID_JOUEUR = I.ID_INDIVIDU
-                    where CJ.ID_SAISON = ".$id_saison." and CJ.ID_CATEGORIE = ".$id_cat." 
+                    where CJ.ID_SAISON = ? and CJ.ID_CATEGORIE = ? 
                     group by CJ.ID_JOUEUR";}
         else if ($id_saison != 0) {
             $case = 2;
@@ -56,7 +56,7 @@ function showClassementJoueur($connection) {
                             CJ.ID_SAISON
                     from CLASS_JOUEUR CJ inner join INDIVIDU I on CJ.ID_JOUEUR = I.ID_INDIVIDU
                                           inner join CATEGORIE C on CJ.ID_CATEGORIE = C.ID_CATEGORIE
-                    where CJ.ID_SAISON = ".$id_saison." 
+                    where CJ.ID_SAISON = ?
                     group by CJ.ID_JOUEUR";}
         else if ($id_cat != 0) {
             $case = 1;
@@ -69,14 +69,35 @@ function showClassementJoueur($connection) {
                                 ifnull(sum(FAUTE),0) as FAUTES,
                                 CJ.ID_SAISON
                         from CLASS_JOUEUR CJ inner join INDIVIDU I on CJ.ID_JOUEUR = I.ID_INDIVIDU
-                        where CJ.ID_CATEGORIE = ".$id_cat." 
+                        where CJ.ID_CATEGORIE = ?
                         group by CJ.ID_JOUEUR";}
     }
+
     $requete1 = "select * from CATEGORIE";
     $requete2 = "select * from SAISON";
-    $res = $connection->query($requete);
     $res1 = $connection->query($requete1);
     $res2 = $connection->query($requete2);
+    if ($res = $connection->prepare($requete)) {
+        switch ($case) {
+            case 0:
+                $res->execute();
+                break;
+            case 1:
+                $res->bind_param('i', $id_cat);
+                $res->execute();
+                break;
+            case 2:
+                $res->bind_param('i', $id_saison);
+                $res->execute();
+                break;
+            case 3:
+                $res->bind_param('ii', $id_saison, $id_cat);
+                $res->execute();
+                break;
+        }
+        $res = $res->get_result();
+    } else 
+        exit();
     if($res && $res1 && $res2) {
         echo "
             <div class=\"table-title\">
