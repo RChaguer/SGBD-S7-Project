@@ -28,20 +28,21 @@ if (isset($_GET['id_club'])) {
     $id = $_GET["id_club"];
 
     $requete = "update CLUB
-                set DATE_CREATION = '".$date."', NOM_CLUB = '".$nom."'
+                set DATE_CREATION = ?, NOM_CLUB = ?
                 where ID_CLUB = ?;";
 
     if($res = $connection->prepare($requete)) {
-        $res->bind_param('i', $id);
+        $res->bind_param('ssi', $date, $nom, $id);
         $res->execute();
     } else {
         console_log("error de requete update");
     }
 } else if (isset($_GET['new'])) {
     $requete = "insert into CLUB (NOM_CLUB, DATE_CREATION)
-                values ('".$nom."', '".$date."');";
+                values ( ?, ?);";
 
     if($res = $connection->prepare($requete)) {
+        $res->bind_param('ss', $nom, $date);
         $res->execute();
     } else {
         console_log("error de requete d'ajout");

@@ -11,7 +11,7 @@ include "connect.php";
 <?php
 function showAllClassement($connection) {
     $requete="select ROW_NUMBER() OVER(
-                order by (3*IFNULL(SUM(WINS), 0) + IFNULL(SUM(DRAWS), 0)) desc ) RANG ,
+                order by (3*IFNULL(SUM(STATS_CLUBS.WINS), 0) + IFNULL(SUM(STATS_CLUBS.DRAWS), 0)) desc ) RANG ,
               CLUB.ID_CLUB ID,
               CLUB.NOM_CLUB NOM,
               IFNULL(SUM(STATS_CLUBS.WINS), 0) WINS,
@@ -81,12 +81,15 @@ function showAllClassementBySaison($connection, $id) {
               IFNULL(STATS_CLUBS.LOSSES, 0) LOSSES,
               (3*IFNULL(WINS, 0) + IFNULL(DRAWS, 0)) as SCORE
         from STATS_CLUBS right outer join CLUB on STATS_CLUBS.ID_CLUB = CLUB.ID_CLUB
-        where STATS_CLUBS.ID_SAISON = ".$id."
+        where STATS_CLUBS.ID_SAISON = ?
         group by STATS_CLUBS.ID_CLUB";
     $requete_s="select ID_SAISON as ID, LABEL
                 from SAISON";
     
-    if($res = $connection->query($requete)) {
+    if($res = $connection->prepare($requete)) {
+        $res->bind_param('i', $id);
+        $res->execute();
+        $res = $res->get_result();
         echo "
             <div class=\"table-title\">
 				<div class=\"row\" >

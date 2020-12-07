@@ -3,10 +3,8 @@ ob_start();
 include "connect.php";
 include "header.php";
 
-// Required field names
 $required = array('nom', 'prenom', 'adresse', 'club');
 
-// Loop over field names, make sure each one exists and is not empty
 $error = !(isset($_GET['id_perso']) || isset($_GET['new']));
 
 foreach($required as $field) {
@@ -31,14 +29,14 @@ if (isset($_GET['id_perso'])) {
     $requete_perso = "update PERSONNEL set  ID_CLUB= ".$club." where ID_PERSONNEL = ?;";
                 
     $requete_ind = "update INDIVIDU
-                set NOM_INDIVIDU = '".$nom."', PRENOM_INDIVIDU = '".$prenom."', ADRESSE = '".$adresse."'
+                set NOM_INDIVIDU = ?, PRENOM_INDIVIDU = ?, ADRESSE = ?
                 where ID_INDIVIDU = ?;";
 
     if($res_perso = $connection->prepare($requete_perso)){
-        $res_perso->bind_param('i', $id);
+        $res_perso->bind_param('ii', $club, $id);
         $res_perso->execute();
         if ( $res_ind = $connection->prepare($requete_ind) ) {
-            $res_ind->bind_param('i', $id);
+            $res_ind->bind_param('sssi', $nom, $prenom, $adresse, $id);
             $res_ind->execute();
         } else {
         console_log("erreur de requete update");
@@ -49,17 +47,19 @@ if (isset($_GET['id_perso'])) {
     
 } else if (isset($_GET['new'])) {
     $requete_ind = "insert into INDIVIDU (NOM_INDIVIDU, PRENOM_INDIVIDU, ADRESSE) 
-                values (\"".$nom."\", \"".$prenom."\", \"".$adresse."\");";
+                values (?, ?, ?);";
     
     if($res_ind = $connection->prepare($requete_ind)) {
-        $res_ind->execute();
+        $res_ind->bind_param('sss', $nom, $prenom, $adresse);
+        $res_ind->execute();      
         $new_id = $connection->insert_id;
             
         $requete_perso = "insert into PERSONNEL (ID_PERSONNEL, ID_CLUB) 
-                            values (".$new_id.", ".$club."); ";
+                            values (?, ?); ";
 
-        if($res_perso = $connection->query($requete_perso)) {
-            console_log("done");
+        if($res_perso = $connection->prepare($requete_perso)) {
+            $res_perso->bind_param('ii', $new_id, $club);
+            $res_perso->execute();
         } else {
             console_log("erreur de requete d\'ajout1");
         }

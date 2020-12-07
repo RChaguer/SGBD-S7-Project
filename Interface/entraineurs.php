@@ -22,9 +22,11 @@ function getUpdateForm($connection, $id) {
     echo "<div class=\"modal-body\">";
     
     $requete = "select I.ID_INDIVIDU ID, I.NOM_INDIVIDU NOM, I.PRENOM_INDIVIDU PRENOM, I.ADRESSE ADR
-                from (INDIVIDU I inner join SPORTIF S on I.ID_INDIVIDU = S.ID_SPORTIF) where I.ID_INDIVIDU = ".$id."; ";
-    if ($res = $connection->query($requete)) {
-        $entrain = $res->fetch_assoc();
+                from (INDIVIDU I inner join SPORTIF S on I.ID_INDIVIDU = S.ID_SPORTIF) where I.ID_INDIVIDU = ?; ";
+    if ($res = $connection->prepare($requete)) {
+        $res->bind_param('i', $id);
+        $res->execute();
+        $entrain = $res->get_result()->fetch_assoc();
         echo "<div class=\"form-group row\">
                 <label  class=\"col-auto col-form-label col-form-label-sm\">Nom</label>
                 <div class=\"col\">
@@ -43,13 +45,12 @@ function getUpdateForm($connection, $id) {
                 <input class=\"form-control\" name='adresse' value=\"".$entrain["ADR"]."\">";
         echo "</div>";
         echo "</div>";
-
     }
      echo "</div>";       
     
     echo "<div class=\"modal-footer\">";
     echo "<button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>";
-    echo "<button type=\"submit\" class=\"btn btn-primary\">Sauvegrader";
+    echo "<button type=\"submit\" class=\"btn btn-primary\">Sauvegarder";
     
     echo "</div>";
     echo "</form>";

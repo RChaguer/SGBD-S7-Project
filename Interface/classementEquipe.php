@@ -50,7 +50,7 @@ function showClassementEquipe($connection) {
                         from TABLE_S TS 
                                 inner join CATEGORIE G on TS.ID_CATEGORIE=G.ID_CATEGORIE
                                 inner join CLUB C on TS.ID_CLUB = C.ID_CLUB
-                        where TS.ID_SAISON = ".$id_saison." and TS.ID_CATEGORIE = ".$id_cat." 
+                        where TS.ID_SAISON = ? and TS.ID_CATEGORIE = ? 
                         group by TS.ID_EQUIPE";}
         else if ($id_saison != 0) {
             $case = 2;
@@ -71,7 +71,7 @@ function showClassementEquipe($connection) {
                         from TABLE_S TS 
                                 inner join CATEGORIE G on TS.ID_CATEGORIE=G.ID_CATEGORIE
                                 inner join CLUB C on TS.ID_CLUB = C.ID_CLUB
-                        where TS.ID_SAISON = ".$id_saison." 
+                        where TS.ID_SAISON = ? 
                         group by TS.ID_EQUIPE";}
         else if ($id_cat != 0) {
             $case = 1;
@@ -91,12 +91,33 @@ function showClassementEquipe($connection) {
                         from TABLE_S TS
                                 inner join CATEGORIE G on TS.ID_CATEGORIE=G.ID_CATEGORIE
                                 inner join CLUB C on TS.ID_CLUB = C.ID_CLUB
-                        where TS.ID_CATEGORIE = ".$id_cat." 
+                        where TS.ID_CATEGORIE = ? 
                         group by TS.ID_EQUIPE";}
-    }
+    } 
+    if ($res = $connection->prepare($requete)) {
+        switch ($case) {
+            case 0:
+                $res->execute();
+                break;
+            case 1:
+                $res->bind_param('i', $id_cat);
+                $res->execute();
+                break;
+            case 2:
+                $res->bind_param('i', $id_saison);
+                $res->execute();
+                break;
+            case 3:
+                $res->bind_param('ii', $id_saison, $id_cat);
+                $res->execute();
+                break;
+        }
+        $res = $res->get_result();
+    } else 
+        exit();
+        
     $requete1 = "select * from CATEGORIE";
     $requete2 = "select * from SAISON";
-    $res = $connection->query($requete);
     $res1 = $connection->query($requete1);
     $res2 = $connection->query($requete2);
     if($res && $res1 && $res2) {

@@ -11,14 +11,16 @@ include "connect.php";
 function showOneClub($connection, $id) {
     $requete1="select NOM_CLUB, DATE_CREATION 
                 from CLUB C 
-                where ID_CLUB=".$id.";";
+                where ID_CLUB= ?;";
     $requete2="select E.ID_EQUIPE ID, E.NOM_EQUIPE NOM, G.NOM_CATEGORIE CAT
                 from EQUIPE E inner join CATEGORIE G on G.ID_CATEGORIE = E.ID_CATEGORIE 
-                where E.ID_CLUB=".$id." 
+                where E.ID_CLUB= ? 
                 order by G.NOM_CATEGORIE";
 
-  /* execute la requete */
-    if($res1 = $connection->query($requete1)) {
+    if($res1 = $connection->prepare($requete1)) {
+        $res1->bind_param('i', $id);
+        $res1->execute();
+        $res1 = $res1->get_result();
         $club = $res1->fetch_assoc();
         echo "<div class=\"modal fade\" id=\"unique_modal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=`\"exampleModalCenterTitle\" aria-hidden=\"false\">";
         echo "<div class=\"modal-dialog modal-dialog-centered\" role=\"document\">";
@@ -30,7 +32,10 @@ function showOneClub($connection, $id) {
         echo "</button>";
         echo "</div>";
         echo "<div class=\"modal-body\">";
-        if ($res2 = $connection->query($requete2)) {
+        if ($res2 = $connection->prepare($requete2)) {
+            $res2->bind_param('i', $id);
+            $res2->execute();
+            $res2 = $res2->get_result();
             echo "<h5 class=\"modal-title\" id=\"modal_title\"> Date de Création : ".$club["DATE_CREATION"]."</h5>";
             echo "<h5 class=\"modal-title\" id=\"modal_title\"> Les Equipes du Club :</h5>";
             echo "<table id=\"equipe_table\" class=\"table\" >";
@@ -69,9 +74,11 @@ function showOneClub($connection, $id) {
 function getUpdateForm($connection, $id) {
     $requete="select NOM_CLUB, DATE_CREATION 
                 from CLUB C 
-                where ID_CLUB=".$id.";";
-    if($res = $connection->query($requete)) {
-        $club = $res->fetch_assoc();
+                where ID_CLUB= ?;";
+    if($res = $connection->prepare($requete)) {
+        $res->bind_param('i', $id);
+        $res->execute();
+        $club = $res->get_result()->fetch_assoc();
     } else {
         header("Location : clubs.php");
         exit();

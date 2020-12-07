@@ -3,7 +3,6 @@ ob_start();
 include "connect.php";
 include "header.php";
 
-// Loop over field names, make sure each one exists and is not empty
 $error = !((isset($_GET['id_perso']) &&  isset($_GET['id_role'])) && (isset($_GET['add']) || isset($_GET['delete']) ));
 
 

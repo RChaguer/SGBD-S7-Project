@@ -12,10 +12,12 @@ function showMatchPage($connection, $id) {
                     inner join EQUIPE E_R on E_R.ID_EQUIPE = M.ID_EQUIPE_R
                     inner join CATEGORIE G on G.ID_CATEGORIE = E_V.ID_CATEGORIE
                     inner join STADE ST on ST.ID_STADE = M.ID_STADE
-                    where M.ID_RENCONTRE = ".$id."";
+                    where M.ID_RENCONTRE = ?";
     
-    if($res = $connection->query($requete)) {
-        $match = $res->fetch_assoc();
+    if($res = $connection->prepare($requete)) {
+        $res->bind_param('i', $id);
+        $res->execute();
+        $match = $res->get_result()->fetch_assoc();
     } else {
         console_log("error");
         exit();
@@ -72,9 +74,9 @@ function showMatchPage($connection, $id) {
                         left join JOUEUR J on J.ID_JOUEUR = S.ID_SPORTIF 
                         left outer join (select H.* 
                                         from HISTORIQUE H
-                                        where H.DATE_DEBUT <= '".$match["DATE"]."' and (H.DATE_FIN is null or H.DATE_FIN > '".$match["DATE"]."')) H on S.ID_SPORTIF = H.ID_SPORTIF 
+                                        where H.DATE_DEBUT <= ? and (H.DATE_FIN is null or H.DATE_FIN > ?)) H on S.ID_SPORTIF = H.ID_SPORTIF 
                         left outer join EQUIPE E on E.ID_EQUIPE = H.ID_EQUIPE
-                        where J.ID_JOUEUR is null and (E.ID_EQUIPE=".$match["R"]." or E.ID_EQUIPE=".$match["V"].");";
+                        where J.ID_JOUEUR is null and (E.ID_EQUIPE= ? or E.ID_EQUIPE= ?);";
 
         echo "<table style=\"width:100%\" class=\"table table-striped table-bordered\">";
         echo "<thead>";
@@ -86,7 +88,10 @@ function showMatchPage($connection, $id) {
         echo "</tr>";
         echo "</thead>";
         echo "<tbody>";
-        if($res_ent = $connection->query($requete_ent)) {
+        if($res_ent = $connection->prepare($requete_ent)) {          
+            $res_ent->bind_param('ssii', $match["DATE"], $match["DATE"], $match["R"], $match["V"]);
+            $res_ent->execute();
+            $res_ent = $res_ent->get_result();
             while ($entrain = $res_ent->fetch_assoc()) {
                 echo "<tr>";
                 echo "<td></td>";
@@ -101,7 +106,7 @@ function showMatchPage($connection, $id) {
       echo "</div>";
         $requete_j = "select JM.ID_PARTICIPATION ID, JM.ID_RENCONTRE RENCONTRE, I.NOM_INDIVIDU NOM, I.PRENOM_INDIVIDU PRENOM, JM.NOM_POSTE POSTE, JM.NOMBRE_BUT BUTS, JM.NOMBRE_FAUTE FAUTES, JM.NOM_EQUIPE EQUIPE
                         from JOUEURS_MATCH JM inner join INDIVIDU I on JM.ID_JOUEUR = I.ID_INDIVIDU
-                        where JM.ID_RENCONTRE=".$id.";";
+                        where JM.ID_RENCONTRE= ?;";
         echo "
         <div class=\"container py-5\">
             <div class=\"table-title\">
@@ -127,7 +132,10 @@ function showMatchPage($connection, $id) {
         echo "</tr>";
         echo "</thead>";
         echo "<tbody>";
-        if($res_j = $connection->query($requete_j)) {
+        if($res_j = $connection->prepare($requete_j)) {
+            $res_j->bind_param('i', $id);
+            $res_j->execute();
+            $res_j = $res_j->get_result();
             while ($particip = $res_j->fetch_assoc()) {
                 echo "<tr>";
                 echo "<td></td>";
@@ -163,9 +171,11 @@ function getAddForm($connection, $id) {
     echo "<div class=\"modal-body\">";
     $requete0 = "select ID_EQUIPE_R R, ID_EQUIPE_V V, DATE_RENCONTRE DATE
                 from RENCONTRE
-                where ID_RENCONTRE = ".$id."";
-    if($res0 = $connection->query($requete0)) {
-        $match = $res0->fetch_assoc();
+                where ID_RENCONTRE = ?";
+    if($res0 = $connection->prepare($requete0)) {
+        $res0->bind_param('i', $id);
+        $res0->execute();
+        $match = $res0->get_result()->fetch_assoc();
     } else {
         exit();
     }
@@ -174,12 +184,15 @@ function getAddForm($connection, $id) {
                 from JOUEUR J inner join HISTORIQUE H on J.ID_JOUEUR = H.ID_SPORTIF 
                 inner join INDIVIDU I on I.ID_INDIVIDU = J.ID_JOUEUR 
                 inner join EQUIPE E on E.ID_EQUIPE = H.ID_EQUIPE
-                where H.DATE_DEBUT <= \"".$match["DATE"]."\" and (H.DATE_FIN is null or H.DATE_FIN > \"".$match["DATE"]."\") and (H.ID_EQUIPE = ".$match["R"]." or H.ID_EQUIPE = ".$match["V"].")";
+                where H.DATE_DEBUT <= ? and (H.DATE_FIN is null or H.DATE_FIN > ?) and (H.ID_EQUIPE = ? or H.ID_EQUIPE = ?)";
     
     $requete2 = "select ID_POSTE, NOM_POSTE
                 from POSTE";
     
-    if($res1 = $connection->query($requete1)) {
+    if($res1 = $connection->prepare($requete1)) {
+        $res1->bind_param('ssii', $match["DATE"], $match["DATE"], $match["R"], $match["V"]);
+        $res1->execute();
+        $res1 = $res1->get_result();
         echo "<div class=\"form-group row\">
                 <label  class=\"col-auto col-form-label col-form-label-sm\">Joueur</label>
                 <div class=\"col\">
@@ -248,9 +261,11 @@ function getUpdateForm($connection, $id) {
     
     $requete_c = "select ID_JOUEUR ID, ID_POSTE POSTE, ID_RENCONTRE RENCONTRE, NOMBRE_BUT BUTS, NOMBRE_FAUTE FAUTES
                 from PARTICIPATION
-                where ID_PARTICIPATION = ".$id."";
-    if($res_c = $connection->query($requete_c)) {
-        $particip = $res_c->fetch_assoc();
+                where ID_PARTICIPATION = ?";
+    if($res_c = $connection->prepare($requete_c)) {
+        $res_c->bind_param('i', $id);
+        $res_c->execute();
+        $particip = $res_c->get_result()->fetch_assoc();
     } else {
         exit();
     }
@@ -260,9 +275,11 @@ function getUpdateForm($connection, $id) {
     
     $requete0 = "select ID_EQUIPE_R R, ID_EQUIPE_V V, DATE_RENCONTRE DATE
                 from RENCONTRE
-                where ID_RENCONTRE = ".$particip["RENCONTRE"]."";
-    if($res0 = $connection->query($requete0)) {
-        $match = $res0->fetch_assoc();
+                where ID_RENCONTRE = ?";
+    if($res0 = $connection->prepare($requete0)) {
+        $res0->bind_param('i', $particip["RENCONTRE"]);
+        $res0->execute();
+        $match = $res0->get_result()->fetch_assoc();
     } else {
         exit();
     }
@@ -271,12 +288,15 @@ function getUpdateForm($connection, $id) {
                 from JOUEUR J inner join HISTORIQUE H on J.ID_JOUEUR = H.ID_SPORTIF 
                 inner join INDIVIDU I on I.ID_INDIVIDU = J.ID_JOUEUR 
                 inner join EQUIPE E on E.ID_EQUIPE = H.ID_EQUIPE
-                where H.DATE_DEBUT <= \"".$match["DATE"]."\" and (H.DATE_FIN is null or H.DATE_FIN > \"".$match["DATE"]."\") and (H.ID_EQUIPE = ".$match["R"]." or H.ID_EQUIPE = ".$match["V"].")";
+                where H.DATE_DEBUT <= ? and (H.DATE_FIN is null or H.DATE_FIN > ?) and (H.ID_EQUIPE = ? or H.ID_EQUIPE = ?)";
     
     $requete2 = "select ID_POSTE, NOM_POSTE
                 from POSTE";
     
-    if($res1 = $connection->query($requete1)) {
+    if($res1 = $connection->prepare($requete1)) {
+        $res1->bind_param('ssii', $match["DATE"], $match["DATE"], $match["R"], $match["V"]);
+        $res1->execute();
+        $res1 = $res1->get_result();
         echo "<div class=\"form-group row\">
                 <label  class=\"col-auto col-form-label col-form-label-sm\">Joueur</label>
                 <div class=\"col\">

@@ -2,8 +2,8 @@
   $host = 'localhost';
   $login = 'root';
   $db_pwd = NULL;
-  $base_name = 'handb' ;
-  /* Creation de l'objet qui gere la connexion: */
+  $base_name = 'handball' ;
+
   $connection = new mysqli($host, $login, $db_pwd, $base_name);
 
   if (mysqli_connect_errno()) {
