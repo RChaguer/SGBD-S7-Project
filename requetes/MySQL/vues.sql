@@ -88,7 +88,7 @@ order by RENCONTRE.ID_RENCONTRE;
 -- vue pour stocker tout les joueurs par rencontre
 -- ================================================
 create view JOUEURS_MATCH as
-select JOUEUR.ID_JOUEUR,NOM_POSTE, ifnull(NOMBRE_BUT,0) as NOMBRE_BUT, ifnull(NOMBRE_FAUTE,0)as NOMBRE_FAUTE,NOM_EQUIPE,ID_PARTICIPATION,RENCONTRE.ID_RENCONTRE
+select JOUEUR.ID_JOUEUR,NOM_POSTE, ifnull(NOMBRE_BUT,0) as NOMBRE_BUT, ifnull(NOMBRE_FAUTE,0)as NOMBRE_FAUTE,NOM_EQUIPE,ID_CATEGORIE,ID_PARTICIPATION,RENCONTRE.ID_RENCONTRE
 from  JOUEUR 
 inner join PARTICIPATION on PARTICIPATION.ID_JOUEUR=JOUEUR.ID_JOUEUR
 inner join POSTE on PARTICIPATION.ID_POSTE=POSTE.ID_POSTE
@@ -482,12 +482,14 @@ begin
       then     
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ENTRER DEUX EQUIPES DIFFERENTES';
      end if;
-
      if NEW.DATE_RENCONTRE 
-     not in ( select DATE_RENCONTRE
-               from RENCONTRE inner join SAISON 
-               on SAISON.ID_SAISON=RENCONTRE.ID_SAISON
-               where DATE_RENCONTRE BETWEEN DATE_DEBUT and DATE_FIN)
+     not BETWEEN (select DATE_DEBUT
+                       from  SAISON 
+                     where ID_SAISON = NEW.ID_SAISON)
+                    and 
+                    ( select DATE_FIN
+                       from  SAISON 
+                     where ID_SAISON = NEW.ID_SAISON)           
       then
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'DATE DE RENCONTRE DOIT ETRE INCLUSE A LA SAISON';
 
