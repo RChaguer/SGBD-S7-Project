@@ -89,6 +89,7 @@ function showAllClassementBySaison($connection, $id) {
     if($res = $connection->prepare($requete)) {
         $res->bind_param('i', $id);
         $res->execute();
+        $res = $res->get_result();
         echo "
             <div class=\"table-title\">
 				<div class=\"row\" >
