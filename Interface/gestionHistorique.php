@@ -27,17 +27,28 @@ $date_f = $_POST["date_f"];
 
 if (isset($_GET['id_histo'])) {
     $id = $_GET["id_histo"];
-
-    $requete = "update HISTORIQUE
-                set ID_SPORTIF = ".$id_sportif.", ID_EQUIPE = ".$id_equipe.", DATE_DEBUT = '".$date_d."', DATE_FIN = '".$date_f."'
+    if (empty($_POST["date_f"])) {
+        $requete = "update HISTORIQUE
+                set ID_SPORTIF = ?, ID_EQUIPE = ?, DATE_DEBUT = ?, DATE_FIN = null
                 where ID_HISTORIQUE = ?;";
-
-    if($res = $connection->prepare($requete)) {
-        $res->bind_param('i', $id);
-        $res->execute();
+        if($res = $connection->prepare($requete)) {
+            $res->bind_param('iisi', $id_sportif, $id_equipe, $date_d, $id);
+            $res->execute();
+        } else {
+            console_log("error de requete update");
+        }
     } else {
-        console_log("error de requete update");
+        $requete = "update HISTORIQUE
+                set ID_SPORTIF = ?, ID_EQUIPE = ?, DATE_DEBUT = ?, DATE_FIN = ?
+                where ID_HISTORIQUE = ?;";
+        if($res = $connection->prepare($requete)) {
+            $res->bind_param('iissi', $id_sportif, $id_equipe, $date_d, $date_f, $id);
+            $res->execute();
+        } else {
+           console_log("error de requete update");
+        }
     }
+
 } else if (isset($_GET['new'])) {
     if (empty($_POST["date_f"])) {
         $requete = "insert into HISTORIQUE (ID_SPORTIF, ID_EQUIPE, DATE_DEBUT)
