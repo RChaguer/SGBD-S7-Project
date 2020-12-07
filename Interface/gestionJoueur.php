@@ -49,22 +49,25 @@ if (isset($_GET['id_joueur'])) {
 } else if (isset($_GET['new'])) {
     $requete_ind = "insert into INDIVIDU (NOM_INDIVIDU, PRENOM_INDIVIDU, ADRESSE) 
                 values (?, ?, ?);";
-    
     if($res_ind = $connection->prepare($requete_ind)) {
         $res_ind->bind_param('sss', $nom, $prenom, $adresse);
         $res_ind->execute();
         $new_id = $connection->insert_id;
         $requete_spo = "insert into SPORTIF (ID_SPORTIF) 
-                        values (?; ";
+                        values (?); ";
         $requete_jou = "insert into JOUEUR (ID_JOUEUR, NUMERO_LICENCE, DATE_NAISSANCE) 
                         values (?, ?, ?);";
-    
-        if($res_spo = $connection->prepare($requete_spo) && $res_jou = $connection->prepare($requete_jou)) {
+        
+        if($res_spo = $connection->prepare($requete_spo)) {
             $res_spo->bind_param('i', $new_id); 
             $res_spo->execute();
-            $res_jou->bind_param('iis', $new_id, $num_lic, $date); 
-            $res_jou->execute();
-            console_log("done");
+            if ($res_jou = $connection->prepare($requete_jou)) {
+                $res_jou->bind_param('iis', $new_id, $num_lic, $date); 
+                $res_jou->execute();
+                console_log("done");
+            } else {
+                console_log("erreur de requete d\'ajout");
+            }
         } else {
             console_log("erreur de requete d\'ajout");
         }

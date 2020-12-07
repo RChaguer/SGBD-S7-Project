@@ -38,6 +38,7 @@ function getAddForm($connection, $id_cat) {
                     <div class=\"col\">
                     <input type=\"hidden\" name=\"new\" value=true/>
                     <select class=\"form-control\" name='cat' id=\"cat_select0\" onchange=\"this.form.submit()\">";
+            echo "<option value=0> ---------- </option>";
             while ($cat = $res0->fetch_assoc()) {
                 echo "<option value=".$cat["ID_CATEGORIE"].">".$cat["NOM_CATEGORIE"]."</option>";
             }

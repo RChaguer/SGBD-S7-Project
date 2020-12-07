@@ -51,8 +51,8 @@ if (isset($_GET['id_entrain'])) {
                         values (?); ";
     
         if($res_spo = $connection->prepare($requete_spo)) {
-            $res_ind->bind_param('i', $new_id);
-            $res_ind->execute();
+            $res_spo->bind_param('i', $new_id);
+            $res_spo->execute();
         } else {
             console_log("erreur de requete d\'ajout");
         }

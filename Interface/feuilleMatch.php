@@ -88,7 +88,7 @@ function showMatchPage($connection, $id) {
         echo "</tr>";
         echo "</thead>";
         echo "<tbody>";
-        if($res_ent = $connection->prepare($requete_ent)) {
+        if($res_ent = $connection->prepare($requete_ent)) {          
             $res_ent->bind_param('ssii', $match["DATE"], $match["DATE"], $match["R"], $match["V"]);
             $res_ent->execute();
             $res_ent = $res_ent->get_result();

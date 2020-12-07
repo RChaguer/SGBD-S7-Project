@@ -42,7 +42,7 @@ if (isset($_GET['id_club'])) {
                 values ( ?, ?);";
 
     if($res = $connection->prepare($requete)) {
-        $res->bind_param('ss', $date, $nom);
+        $res->bind_param('ss', $nom, $date);
         $res->execute();
     } else {
         console_log("error de requete d'ajout");
