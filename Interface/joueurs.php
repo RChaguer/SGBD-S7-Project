@@ -62,7 +62,7 @@ function getUpdateForm($connection, $id) {
     
     echo "<div class=\"modal-footer\">";
     echo "<button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>";
-    echo "<button type=\"submit\" class=\"btn btn-primary\">Sauvegrader";
+    echo "<button type=\"submit\" class=\"btn btn-primary\">Sauvegarder";
     
     echo "</div>";
     echo "</form>";

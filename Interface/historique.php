@@ -29,7 +29,7 @@ function getUpdateForm($connection, $id) {
     echo "<div class=\"modal-dialog modal-dialog-centered\" role=\"document\">";
     echo "<div class=\"modal-content\">";
     echo "<div class=\"modal-header\">";
-    echo "<h4 class=\"modal-title\" id=\"modal_title\">Ajouter un Historique</h4>";
+    echo "<h4 class=\"modal-title\" id=\"modal_title\">Modifier un Historique</h4>";
     echo "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">";
     echo "<span aria-hidden=\"true\">&times;</span>";
     echo "</button>";
@@ -90,7 +90,7 @@ function getUpdateForm($connection, $id) {
     
     echo "<div class=\"modal-footer\">";
     echo "<button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>";
-    echo "<button type=\"submit\" class=\"btn btn-primary\">Ajouter";
+    echo "<button type=\"submit\" class=\"btn btn-primary\">Sauvegarder";
 
     echo "</div>";
     echo "</form>";
