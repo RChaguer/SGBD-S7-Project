@@ -167,4 +167,26 @@ select  CLUB.NOM_CLUB NOM,
     group by STATS_CLUBS.ID_CLUB;
 
 
+-- requete pour affichier la feuille du match
+select E_R.NOM_EQUIPE HOME, ifnull(S.SCOREHOME, 0) as SCOREHOME, ifnull(S.SCOREAWAY, 0) as SCOREAWAY, E_V.NOM_EQUIPE AWAY, M.DATE_RENCONTRE DATE, G.NOM_CATEGORIE CAT, SA.LABEL S_LABEL , ST.NOM_STADE STADE     
+    from SCORE S right outer join RENCONTRE M on M.ID_RENCONTRE = S.RENCONTRE
+    inner join SAISON SA on SA.ID_SAISON = M.ID_SAISON
+    inner join EQUIPE E_V on E_V.ID_EQUIPE = M.ID_EQUIPE_V
+    inner join EQUIPE E_R on E_R.ID_EQUIPE = M.ID_EQUIPE_R
+    inner join CATEGORIE G on G.ID_CATEGORIE = E_V.ID_CATEGORIE
+    inner join STADE ST on ST.ID_STADE = M.ID_STADE
+    where M.ID_RENCONTRE = 1;
+
+
+-- requete pour affichier l'entraineur d'une équipe donnée à une date donnée
+-- (ici ID_EQUIPE = 13 and DATE = '2020-01-01')
+select I.NOM_INDIVIDU NOM,PRENOM_INDIVIDU PRENOM, ADRESSE, E.NOM_EQUIPE NOM_EQUIPE, H.DATE_DEBUT DATE_DEBUT, H.DATE_FIN DATE_FIN
+                from (INDIVIDU I inner join SPORTIF S on I.ID_INDIVIDU= S.ID_SPORTIF
+                left join JOUEUR J on J.ID_JOUEUR = S.ID_SPORTIF  
+                left outer join (select H.*
+                                 from HISTORIQUE H
+                                 where H.DATE_DEBUT <= '2020-01-01' and (H.DATE_FIN is null or H.DATE_FIN > '2020-01-01')) H on S.ID_SPORTIF = H.ID_SPORTIF) 
+                left outer join EQUIPE E on E.ID_EQUIPE=H.ID_EQUIPE
+                where J.ID_JOUEUR is null and H.ID_EQUIPE=13;
+
 
