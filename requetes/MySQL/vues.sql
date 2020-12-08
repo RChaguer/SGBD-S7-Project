@@ -539,6 +539,72 @@ DELIMITER ;
 -- ======================================
 
 -- ========================================================
+-- procedure stockée pour insérer un joueur
+-- ========================================================
+
+DELIMITER |
+create procedure INSERER_JOUEUR (in NOM char(30), in PRENOM char(30), in ADRESSE char(50), in NUMERO_LICENCE int, in DATE_NAISSANCE date)
+begin
+  start transaction;
+
+    insert into INDIVIDU (NOM_INDIVIDU, PRENOM_INDIVIDU, ADRESSE) 
+     values(NOM, PRENOM, ADRESSE);
+
+    set @id = LAST_INSERT_ID();
+
+    insert into SPORTIF (ID_SPORTIF) 
+     values(@id);
+
+    insert into JOUEUR (ID_JOUEUR, NUMERO_LICENCE, DATE_NAISSANCE)
+    values(@id, NUMERO_LICENCE, DATE_NAISSANCE);
+    
+  commit;
+end |
+DELIMITER ;
+
+-- ========================================================
+-- procedure stockée pour insérer un entraineur 
+-- ========================================================
+
+DELIMITER |
+create procedure INSERER_ENTRAINEUR (in NOM char(30), in PRENOM char(30), in ADRESSE char(50))
+begin
+  start transaction;
+
+    insert into INDIVIDU (NOM_INDIVIDU, PRENOM_INDIVIDU, ADRESSE)
+     values(NOM, PRENOM, ADRESSE);
+
+    set @id = LAST_INSERT_ID();
+
+    insert into SPORTIF (ID_SPORTIF) 
+     values(@id);
+   
+  commit;
+end |
+DELIMITER ;
+
+-- ========================================================
+-- procedure stockée pour insérer un personnel 
+-- ========================================================
+
+DELIMITER |
+create procedure INSERER_PERSONNEL (in NOM char(30), in PRENOM char(30), in ADRESSE char(50), in CLUB int)
+begin
+  start transaction;
+
+    insert into INDIVIDU (NOM_INDIVIDU, PRENOM_INDIVIDU, ADRESSE) 
+     values(NOM, PRENOM, ADRESSE);
+
+    set @id = LAST_INSERT_ID();
+
+    insert into PERSONNEL (ID_PERSONNEL, ID_CLUB) 
+     values(@id, CLUB);
+   
+  commit;
+end |
+DELIMITER ;
+
+-- ========================================================
 -- procedure stockée pour insérer un historique 
 -- de telle façon à ce que la date de fin du contrat
 -- du sportif dans son équipe précédente devient 
