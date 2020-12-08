@@ -26,7 +26,7 @@ $club = $_POST["club"];
 if (isset($_GET['id_perso'])) {
     $id = $_GET["id_perso"];
 
-    $requete_perso = "update PERSONNEL set  ID_CLUB= ".$club." where ID_PERSONNEL = ?;";
+    $requete_perso = "update PERSONNEL set  ID_CLUB= ? where ID_PERSONNEL = ?;";
                 
     $requete_ind = "update INDIVIDU
                 set NOM_INDIVIDU = ?, PRENOM_INDIVIDU = ?, ADRESSE = ?
@@ -46,26 +46,12 @@ if (isset($_GET['id_perso'])) {
     }
     
 } else if (isset($_GET['new'])) {
-    $requete_ind = "insert into INDIVIDU (NOM_INDIVIDU, PRENOM_INDIVIDU, ADRESSE) 
-                values (?, ?, ?);";
-    
-    if($res_ind = $connection->prepare($requete_ind)) {
-        $res_ind->bind_param('sss', $nom, $prenom, $adresse);
-        $res_ind->execute();      
-        $new_id = $connection->insert_id;
-            
-        $requete_perso = "insert into PERSONNEL (ID_PERSONNEL, ID_CLUB) 
-                            values (?, ?); ";
-
-        if($res_perso = $connection->prepare($requete_perso)) {
-            $res_perso->bind_param('ii', $new_id, $club);
-            $res_perso->execute();
-        } else {
-            console_log("erreur de requete d\'ajout1");
-        }
+    $requete = "call INSERER_PERSONNEL(?, ?, ?, ?);";
+    if($res = $connection->prepare($requete)) {
+        $res->bind_param('sssi', $nom, $prenom, $adresse, $club);
+        $res->execute();
     } else 
         console_log("erreur de requete d\'ajout2");
-
 }
 $connection->close();
 header("Location: personnels.php");

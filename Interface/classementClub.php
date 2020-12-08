@@ -10,7 +10,7 @@ include "connect.php";
 
 <?php
 function showAllClassement($connection) {
-    $requete="select ROW_NUMBER() OVER(
+    $requete="select RANK() OVER(
                 order by (3*IFNULL(SUM(STATS_CLUBS.WINS), 0) + IFNULL(SUM(STATS_CLUBS.DRAWS), 0)) desc ) RANG ,
               CLUB.ID_CLUB ID,
               CLUB.NOM_CLUB NOM,

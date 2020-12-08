@@ -40,22 +40,10 @@ if (isset($_GET['id_entrain'])) {
     
  
 } else if (isset($_GET['new'])) {
-    $requete_ind = "insert into INDIVIDU (NOM_INDIVIDU, PRENOM_INDIVIDU, ADRESSE) 
-                values (?, ?, ?);";
-    
-    if($res_ind = $connection->prepare($requete_ind)) {
-        $res_ind->bind_param('sss', $nom, $prenom, $adresse);
-        $res_ind->execute();
-        $new_id = $connection->insert_id;
-        $requete_spo = "insert into SPORTIF (ID_SPORTIF) 
-                        values (?); ";
-    
-        if($res_spo = $connection->prepare($requete_spo)) {
-            $res_spo->bind_param('i', $new_id);
-            $res_spo->execute();
-        } else {
-            console_log("erreur de requete d\'ajout");
-        }
+    $requete = "call INSERER_ENTRAINEUR(?, ?, ?);";
+    if($res = $connection->prepare($requete)) {
+        $res->bind_param('sss', $nom, $prenom, $adresse);
+        $res->execute();
     } else 
         console_log("erreur de requete d\'ajout");
 }
